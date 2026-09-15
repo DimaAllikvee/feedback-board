@@ -2,7 +2,9 @@ import PocketBase from 'pocketbase';
 import { FeedbackPost, Comment, User } from '../types';
 
 // Environment variable for PocketBase URL (Project Week requirement)
-const POCKETBASE_URL = import.meta.env.VITE_POCKETBASE_URL || 'http://127.0.0.1:8090';
+const POCKETBASE_URL = 
+  import.meta.env.VITE_POCKETBASE_URL || 
+  'http://pocketbase-bzmqz78h0ehdz5mnq2t4eumx.176.112.158.15.sslip.io';
 
 export const pb = new PocketBase(POCKETBASE_URL);
 

@@ -35,8 +35,8 @@
 
 ## 3. Live Service Links
 
-- **Frontend Application (Coolify):** `https://feedback.your-domain.com` *(or `http://localhost:5173` locally)*
-- **PocketBase Admin Dashboard:** `https://pb.your-domain.com/_/` *(or `http://localhost:8090/_/` locally)*
+- **Frontend Application (Coolify):** Deployed on Coolify
+- **PocketBase API & Admin Dashboard:** [http://pocketbase-bzmqz78h0ehdz5mnq2t4eumx.176.112.158.15.sslip.io/_/](http://pocketbase-bzmqz78h0ehdz5mnq2t4eumx.176.112.158.15.sslip.io/_/)
 - **GitHub Repository (Private):** [https://github.com/DimaAllikvee/feedback-board](https://github.com/DimaAllikvee/feedback-board)
 
 ---
