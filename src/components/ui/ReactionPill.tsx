@@ -1,111 +1,131 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
-import confetti from 'canvas-confetti';
+import { 
+  RuneThumbsUp, 
+  RuneLightbulb, 
+  RuneZap, 
+  RuneHeart, 
+  RuneBookmark, 
+  RunePlus 
+} from '../icons/RuneIcons';
 
 interface ReactionPillProps {
   postId: string;
   className?: string;
 }
 
-const EMOJIS = ['👍', '🚀', '💡', '🔥', '❤️'];
+export interface ReactionConfig {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number | string; className?: string }>;
+}
+
+export const REACTIONS: ReactionConfig[] = [
+  { id: 'agree', label: 'Agree', icon: RuneThumbsUp },
+  { id: 'insight', label: 'Insightful', icon: RuneLightbulb },
+  { id: 'impact', label: 'High Impact', icon: RuneZap },
+  { id: 'appreciate', label: 'Appreciate', icon: RuneHeart },
+  { id: 'bookmark', label: 'Bookmark', icon: RuneBookmark },
+];
 
 /**
- * ReactionPill component inspired by rare-ui (https://github.com/swamimalode07/rare-ui)
+ * ReactionPill component using clean, neutral semantic SVG iconography.
+ * Fully replaces cartoon emojis with minimal, professional indicators.
  */
 export const ReactionPill: React.FC<ReactionPillProps> = ({ className = '' }) => {
-  const [reactions, setReactions] = useState<{ [emoji: string]: number }>({
-    '👍': 3,
-    '🚀': 2,
-    '💡': 1,
+  const [reactions, setReactions] = useState<{ [id: string]: number }>({
+    agree: 4,
+    insight: 2,
+    impact: 1,
   });
-  const [userReacted, setUserReacted] = useState<{ [emoji: string]: boolean }>({});
+  const [userReacted, setUserReacted] = useState<{ [id: string]: boolean }>({});
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleSelectEmoji = (emoji: string, e: React.MouseEvent) => {
+  const handleSelectReaction = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const has = userReacted[emoji];
+    const has = userReacted[id];
     setReactions((prev) => ({
       ...prev,
-      [emoji]: (prev[emoji] || 0) + (has ? -1 : 1),
+      [id]: Math.max(0, (prev[id] || 0) + (has ? -1 : 1)),
     }));
     setUserReacted((prev) => ({
       ...prev,
-      [emoji]: !has,
+      [id]: !has,
     }));
     setMenuOpen(false);
-
-    if (!has) {
-      try {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = (rect.left + rect.width / 2) / window.innerWidth;
-        const y = (rect.top + rect.height / 2) / window.innerHeight;
-        confetti({
-          particleCount: 12,
-          spread: 35,
-          origin: { x, y },
-          scalar: 0.8,
-          disableForReducedMotion: true,
-        });
-      } catch (err) {
-        // safe
-      }
-    }
   };
 
   return (
     <div className={cn("relative flex items-center gap-1.5", className)} onClick={(e) => e.stopPropagation()}>
       {/* Active reaction buttons */}
-      {Object.entries(reactions)
-        .filter(([, count]) => count > 0)
-        .map(([emoji, count]) => (
+      {REACTIONS.map((item) => {
+        const count = reactions[item.id] || 0;
+        if (count <= 0) return null;
+        const Icon = item.icon;
+        const isReacted = Boolean(userReacted[item.id]);
+
+        return (
           <motion.button
-            key={emoji}
-            whileTap={{ scale: 0.9 }}
+            key={item.id}
+            whileTap={{ scale: 0.95 }}
             type="button"
-            onClick={(e) => handleSelectEmoji(emoji, e)}
+            onClick={(e) => handleSelectReaction(item.id, e)}
+            title={item.label}
             className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium border transition-colors",
-              userReacted[emoji]
-                ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-300"
-                : "bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none",
+              isReacted
+                ? "bg-zinc-800 text-zinc-100 border-zinc-600 shadow-sm"
+                : "bg-zinc-900/60 text-zinc-400 border-zinc-800/80 hover:text-zinc-200 hover:bg-zinc-800/60 hover:border-zinc-700"
             )}
           >
-            <span>{emoji}</span>
-            <span className="text-[10px]">{count}</span>
+            <Icon size={13} className={isReacted ? "text-zinc-100" : "text-zinc-400"} />
+            <span className="text-[11px] font-mono">{count}</span>
           </motion.button>
-        ))}
+        );
+      })}
 
-      {/* Add reaction trigger */}
+      {/* Add reaction trigger button */}
       <div className="relative">
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
-          className="p-1 px-1.5 rounded-lg text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
-          title="Add emoji reaction"
+          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80 hover:border-zinc-700 transition-colors cursor-pointer"
+          title="Add reaction"
         >
-          +😀
+          <RunePlus size={13} />
+          <span className="text-[11px]">React</span>
         </button>
 
         <AnimatePresence>
           {menuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 5, scale: 0.9 }}
+              initial={{ opacity: 0, y: 4, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 5, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 500, damping: 25 }}
-              className="absolute left-0 bottom-full mb-1.5 z-30 flex items-center gap-1 p-1 rounded-full bg-zinc-900/95 border border-zinc-700 shadow-xl backdrop-blur-md"
+              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute left-0 bottom-full mb-1.5 z-30 flex items-center gap-1 p-1 rounded-xl bg-zinc-900 border border-zinc-700/80 shadow-2xl backdrop-blur-xl"
             >
-              {EMOJIS.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  onClick={(e) => handleSelectEmoji(emoji, e)}
-                  className="p-1 rounded-full text-sm hover:scale-125 transition-transform active:scale-95"
-                >
-                  {emoji}
-                </button>
-              ))}
+              {REACTIONS.map((item) => {
+                const Icon = item.icon;
+                const isReacted = Boolean(userReacted[item.id]);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={(e) => handleSelectReaction(item.id, e)}
+                    title={item.label}
+                    className={cn(
+                      "flex items-center justify-center w-8 h-8 rounded-lg transition-all cursor-pointer",
+                      isReacted
+                        ? "bg-zinc-800 text-zinc-100 border border-zinc-600"
+                        : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
+                    )}
+                  >
+                    <Icon size={15} />
+                  </button>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

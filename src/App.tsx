@@ -19,13 +19,7 @@ import { NewPostModal } from './components/NewPostModal';
 import { StripeProModal } from './components/StripeProModal';
 import { AuthModal } from './components/AuthModal';
 import { ToastStack, ToastMessage } from './components/ui/Toast';
-import { 
-  RuneSparkles, 
-  RuneCrown, 
-  RuneCircleCheck, 
-  RuneCompass,
-  RuneClock
-} from './components/icons/RuneIcons';
+import { RuneCrown } from './components/icons/RuneIcons';
 
 export const App: React.FC = () => {
   // Start unauthenticated (User is NOT logged in by default)
@@ -219,7 +213,7 @@ export const App: React.FC = () => {
           if (!alreadyVoted) {
             addToast(
               'Vote Registered',
-              currentUser.is_pro ? '+3 PRO Priority Votes added!' : '+1 vote recorded.',
+              currentUser.is_pro ? '+3 Supporter Priority Votes recorded!' : '+1 vote recorded.',
               'success'
             );
           } else {
@@ -383,17 +377,17 @@ export const App: React.FC = () => {
 
   const handleOpenStripeModal = () => {
     if (!currentUser) {
-      addToast('Sign In Required', 'Please sign in before subscribing to PRO.', 'info');
+      addToast('Sign In Required', 'Please sign in before joining as a Supporter.', 'info');
       setIsAuthModalOpen(true);
       return;
     }
     setIsStripeModalOpen(true);
   };
 
-  // PRO Upgrade handler
+  // Supporter Upgrade handler
   const handleUpgradeSuccess = (_transactionId: string) => {
     setCurrentUser((prev) => (prev ? { ...prev, is_pro: true } : prev));
-    addToast('PRO Membership Active!', 'Enjoy 3x upvote weight and supporter badge perks.', 'success');
+    addToast('Supporter Membership Active!', 'Thank you! Enjoy 3x upvote priority and community perks.', 'success');
   };
 
   // Roadmap Metrics
@@ -419,55 +413,40 @@ export const App: React.FC = () => {
         searchInputRef={searchInputRef}
       />
 
-      {/* Hero Banner with Live Metrics (Solid background without gradients) */}
-      <section className="relative border-b border-zinc-800/80 bg-zinc-950 py-8 sm:py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-zinc-900 text-zinc-300 border border-zinc-800 mb-3">
-                <RuneSparkles size={13} className="text-indigo-400" />
-                <span>Product Feedback & Roadmap Portal</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Shape our Product Roadmap together
+      {/* Decluttered Minimalist Hero with Inline Status Strip */}
+      <section className="border-b border-zinc-800/80 bg-[#090a0f] py-7 sm:py-9">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div className="max-w-2xl">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100 leading-tight">
+                Product Roadmap & Feedback
               </h1>
-              <p className="text-sm text-zinc-400 max-w-2xl mt-1.5 leading-relaxed">
-                Submit feature proposals, upvote priorities with 3x PRO weight, and watch ideas transition smoothly from review to live production.
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 leading-relaxed">
+                Propose features, cast priority votes with supporter weight, and track engineering progress from review to shipped.
               </p>
             </div>
 
-            {/* Quick Metrics Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full md:w-auto">
-              <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-center">
-                <div className="flex items-center justify-center gap-1 text-amber-400 text-xs font-bold mb-0.5">
-                  <RuneClock size={13} />
-                  <span>Review</span>
-                </div>
-                <div className="text-lg font-extrabold text-zinc-100">{underReviewCount}</div>
+            {/* Streamlined inline status indicators */}
+            <div className="flex items-center flex-wrap gap-2 text-xs">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+                <span className="text-zinc-400">Review:</span>
+                <span className="font-mono font-medium text-zinc-200">{underReviewCount}</span>
               </div>
-
-              <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-center">
-                <div className="flex items-center justify-center gap-1 text-blue-400 text-xs font-bold mb-0.5">
-                  <RuneCompass size={13} />
-                  <span>Planned</span>
-                </div>
-                <div className="text-lg font-extrabold text-zinc-100">{plannedCount}</div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/80" />
+                <span className="text-zinc-400">Planned:</span>
+                <span className="font-mono font-medium text-zinc-200">{plannedCount}</span>
               </div>
-
-              <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-center">
-                <div className="flex items-center justify-center gap-1 text-purple-400 text-xs font-bold mb-0.5">
-                  <RuneSparkles size={13} />
-                  <span>In Progress</span>
-                </div>
-                <div className="text-lg font-extrabold text-zinc-100">{inProgressCount}</div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400/80" />
+                <span className="text-zinc-400">In Progress:</span>
+                <span className="font-mono font-medium text-zinc-200">{inProgressCount}</span>
               </div>
-
-              <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-center">
-                <div className="flex items-center justify-center gap-1 text-emerald-400 text-xs font-bold mb-0.5">
-                  <RuneCircleCheck size={13} />
-                  <span>Completed</span>
-                </div>
-                <div className="text-lg font-extrabold text-zinc-100">{completedCount}</div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
+                <span className="text-zinc-400">Completed:</span>
+                <span className="font-mono font-medium text-zinc-200">{completedCount}</span>
               </div>
             </div>
 
@@ -495,21 +474,21 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-800/80 bg-zinc-950/80 py-6 text-xs text-zinc-500">
+      {/* Clean Minimalist Footer */}
+      <footer className="border-t border-zinc-800/80 bg-zinc-950 py-6 text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-zinc-400">FeedbackPulse SaaS MVP</span>
+            <span className="font-medium text-zinc-300">Hometown Board</span>
             <span>•</span>
-            <span>PocketBase + Coolify + React 19 + Stripe</span>
+            <span>Community Feedback & Roadmap</span>
           </div>
-          <div className="flex items-center gap-4 text-zinc-400">
-            <span className="flex items-center gap-1">
-              <RuneCrown size={13} className="text-amber-400" />
-              <span>Stripe Test Mode Enabled</span>
+          <div className="flex items-center gap-3 text-zinc-400">
+            <span className="flex items-center gap-1.5">
+              <RuneCrown size={13} className="text-zinc-400" />
+              <span>Stripe Test Mode Active</span>
             </span>
             <span>•</span>
-            <span>Developed by Dmitri Allikvee</span>
+            <span>PocketBase Backend</span>
           </div>
         </div>
       </footer>

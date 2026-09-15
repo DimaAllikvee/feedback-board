@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  RuneSparkles, 
   RuneSearch, 
   RunePlus, 
   RuneKanban, 
@@ -12,6 +11,7 @@ import {
   RuneChevronDown,
   RuneX
 } from './icons/RuneIcons';
+import { HometownLogo } from './icons/HometownLogo';
 import { Kbd } from './ui/Kbd';
 import { User, ActiveTab } from '../types';
 import { UserAvatar } from './ui/UserAvatar';
@@ -49,22 +49,22 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
-          {/* Brand & Logo (Clean solid design without flashy gradients) */}
+          {/* Hometown Brand & Logo */}
           <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-600 text-white shadow-sm">
-              <RuneSparkles size={20} className="text-white" />
+            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 hover:border-zinc-700 transition-colors">
+              <HometownLogo size={22} className="text-zinc-100" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg tracking-tight text-zinc-100">
-                  FeedbackPulse
+                <span className="font-bold text-base sm:text-lg tracking-tight text-zinc-100">
+                  Hometown
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-zinc-800 text-zinc-300 border border-zinc-700/60">
-                  SaaS
+                <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                  Board
                 </span>
               </div>
               <p className="text-[11px] text-zinc-400 hidden sm:block">
-                Feature Requests & Interactive Roadmap
+                Feedback & Product Roadmap
               </p>
             </div>
           </div>
@@ -72,14 +72,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Quick Search with coss.com/ui Kbd indicator */}
           <div className="flex-1 max-w-md hidden md:block">
             <div className="relative flex items-center">
-              <RuneSearch size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
+              <RuneSearch size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search feedback, ideas, or roadmap items..."
+                placeholder="Search proposals, topics, or milestones..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full bg-zinc-900 text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-all"
+                className="w-full bg-zinc-900/80 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-all"
               />
               <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 {searchQuery ? (
@@ -98,27 +98,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Action CTAs & Auth */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             
-            {/* Stripe PRO Button */}
+            {/* Supporter Pass Button (formerly Stripe PRO) */}
             <button
               onClick={onOpenStripeModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-all cursor-pointer"
-              title="Stripe Test Mode Billing (Grade 'A' Requirement)"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-all cursor-pointer"
+              title="Supporter Membership (Stripe Billing)"
             >
-              <RuneCrown size={15} className="text-amber-400" />
-              <span className="hidden sm:inline">Stripe PRO</span>
+              <RuneCrown size={14} className="text-zinc-400" />
+              <span className="hidden sm:inline">Supporter</span>
               {currentUser?.is_pro && (
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               )}
             </button>
 
-            {/* New Post Button (Solid clean indigo) */}
+            {/* New Post Button (Clean neutral high-contrast) */}
             <button
               onClick={onOpenNewPost}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-98 transition-all cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-98 transition-all cursor-pointer shadow-sm"
             >
-              <RunePlus size={15} />
+              <RunePlus size={14} />
               <span>New Idea</span>
             </button>
 
@@ -137,9 +137,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                     <div className="text-[10px] text-zinc-400">
                       {currentUser.role === 'admin' ? (
-                        <span className="text-rose-400 font-bold">Admin</span>
+                        <span className="text-rose-400 font-medium">Admin</span>
                       ) : currentUser.is_pro ? (
-                        <span className="text-amber-400 font-bold">PRO Member</span>
+                        <span className="text-zinc-200 font-medium">Supporter</span>
                       ) : (
                         <span>Member</span>
                       )}
@@ -176,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={onOpenAuthModal}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700/80 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-all cursor-pointer"
               >
                 <RuneUser size={14} />
                 <span>Sign In</span>
@@ -190,49 +190,49 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center space-x-1 sm:space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-zinc-800/40">
           <button
             onClick={() => onTabChange('roadmap')}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'roadmap'
-                ? 'bg-zinc-800 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+                ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent'
             }`}
           >
-            <RuneKanban size={15} className="text-indigo-400" />
+            <RuneKanban size={14} className={activeTab === 'roadmap' ? "text-zinc-200" : "text-zinc-500"} />
             <span>Roadmap</span>
           </button>
 
           <button
             onClick={() => onTabChange('list')}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'list'
-                ? 'bg-zinc-800 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+                ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent'
             }`}
           >
-            <RuneList size={15} className="text-blue-400" />
+            <RuneList size={14} className={activeTab === 'list' ? "text-zinc-200" : "text-zinc-500"} />
             <span>All Posts</span>
           </button>
 
           <button
             onClick={() => onTabChange('my-posts')}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'my-posts'
-                ? 'bg-zinc-800 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+                ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent'
             }`}
           >
-            <RunePin size={15} className="text-violet-400" />
+            <RunePin size={14} className={activeTab === 'my-posts' ? "text-zinc-200" : "text-zinc-500"} />
             <span>My Submissions</span>
           </button>
 
           <button
             onClick={() => onTabChange('my-votes')}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
               activeTab === 'my-votes'
-                ? 'bg-zinc-800 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+                ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent'
             }`}
           >
-            <RuneChevronUp size={15} className="text-emerald-400" />
+            <RuneChevronUp size={14} className={activeTab === 'my-votes' ? "text-zinc-200" : "text-zinc-500"} />
             <span>My Upvoted</span>
           </button>
         </div>

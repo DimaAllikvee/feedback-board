@@ -7,7 +7,6 @@ import {
   RuneEdit, 
   RuneEye 
 } from './icons/RuneIcons';
-import confetti from 'canvas-confetti';
 
 interface NewPostModalProps {
   currentUser: User | null;
@@ -27,11 +26,11 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
 
   const categories: { id: PostCategory; label: string }[] = [
-    { id: 'feature', label: '🚀 Feature' },
-    { id: 'improvement', label: '⚡ Improvement' },
-    { id: 'bug', label: '🐛 Bug Report' },
-    { id: 'integration', label: '🔌 Integration' },
-    { id: 'ui-ux', label: '🎨 UI / UX' },
+    { id: 'feature', label: 'Feature' },
+    { id: 'improvement', label: 'Improvement' },
+    { id: 'bug', label: 'Bug Report' },
+    { id: 'integration', label: 'Integration' },
+    { id: 'ui-ux', label: 'UI / UX' },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,17 +55,6 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
       category,
     });
 
-    try {
-      confetti({
-        particleCount: 25,
-        spread: 50,
-        origin: { y: 0.6 },
-        colors: ['#6366f1', '#10b981', '#3b82f6']
-      });
-    } catch (e) {
-      // safe
-    }
-
     onClose();
   };
 
@@ -76,28 +64,28 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-xl bg-[#0d0f17] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in my-8"
+        className="relative w-full max-w-xl bg-[#0c0d12] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close dialog"
-          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors cursor-pointer"
         >
           <RuneX size={18} />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
-            <RuneSparkles size={20} />
+        <div className="flex items-center gap-3.5 mb-6">
+          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-200">
+            <RuneSparkles size={18} />
           </div>
           <div>
             <h2 className="text-xl font-bold text-zinc-100 tracking-tight">
-              Suggest a Feature or Improvement
+              New Proposal
             </h2>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-400 mt-0.5">
               Submitting as: <strong className="text-zinc-200">{currentUser?.name || 'Community Member'}</strong>
             </p>
           </div>
@@ -108,8 +96,8 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
           <button
             type="button"
             onClick={() => setIsPreview(false)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
-              !isPreview ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+              !isPreview ? 'bg-zinc-800 text-zinc-100 border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <RuneEdit size={13} />
@@ -118,8 +106,8 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
           <button
             type="button"
             onClick={() => setIsPreview(true)}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
-              isPreview ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+              isPreview ? 'bg-zinc-800 text-zinc-100 border border-zinc-700' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             <RuneEye size={13} />
@@ -140,9 +128,9 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
                     key={cat.id}
                     type="button"
                     onClick={() => setCategory(cat.id)}
-                    className={`px-3 py-2 rounded-xl text-xs font-semibold border text-left transition-all ${
+                    className={`px-3 py-2 rounded-xl text-xs font-medium border text-left transition-all cursor-pointer ${
                       category === cat.id
-                        ? 'bg-indigo-600/20 text-indigo-300 border-indigo-500/50 shadow-sm'
+                        ? 'bg-zinc-800 text-zinc-100 border-zinc-600 shadow-sm'
                         : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:bg-zinc-800/60 hover:text-zinc-200'
                     }`}
                   >
@@ -158,7 +146,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
                 <label className="text-xs font-medium text-zinc-300">
                   Proposal Title
                 </label>
-                <span className="text-[10px] text-zinc-500">{title.length}/80</span>
+                <span className="text-[10px] text-zinc-500 font-mono">{title.length}/80</span>
               </div>
               <input
                 type="text"
@@ -170,7 +158,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
                   if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
                 }}
                 className={`w-full bg-zinc-900/90 text-sm text-zinc-100 placeholder-zinc-500 px-4 py-2.5 rounded-xl border focus:outline-none transition-all ${
-                  errors.title ? 'border-rose-500/60' : 'border-zinc-800 focus:border-indigo-500/60'
+                  errors.title ? 'border-rose-500/60' : 'border-zinc-800 focus:border-zinc-600'
                 }`}
               />
               {errors.title && (
@@ -186,19 +174,19 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
                 <label className="text-xs font-medium text-zinc-300">
                   Detailed Description
                 </label>
-                <span className="text-[10px] text-zinc-500">{description.length}/1000</span>
+                <span className="text-[10px] text-zinc-500 font-mono">{description.length}/1000</span>
               </div>
               <textarea
                 rows={4}
                 maxLength={1000}
-                placeholder="Describe why this feature is important and how it improves your team workflow..."
+                placeholder="Describe the proposal, user problem, and expected outcome..."
                 value={description}
                 onChange={(e) => {
                   setDescription(e.target.value);
                   if (errors.description) setErrors((prev) => ({ ...prev, description: undefined }));
                 }}
                 className={`w-full bg-zinc-900/90 text-sm text-zinc-100 placeholder-zinc-500 p-3.5 rounded-xl border focus:outline-none transition-all resize-none ${
-                  errors.description ? 'border-rose-500/60' : 'border-zinc-800 focus:border-indigo-500/60'
+                  errors.description ? 'border-rose-500/60' : 'border-zinc-800 focus:border-zinc-600'
                 }`}
               />
               {errors.description && (
@@ -213,15 +201,14 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-95 transition-all shadow-sm cursor-pointer"
               >
-                <RuneSparkles size={14} />
                 <span>Publish Proposal</span>
               </button>
             </div>
@@ -246,7 +233,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               <button
                 type="button"
                 onClick={() => setIsPreview(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500"
+                className="px-4 py-2 rounded-xl text-xs font-medium bg-zinc-800 text-zinc-200 hover:bg-zinc-700 cursor-pointer"
               >
                 Back to Edit
               </button>

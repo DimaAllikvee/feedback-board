@@ -6,10 +6,9 @@ import {
   RuneShield, 
   RuneCrown, 
   RuneX, 
-  RuneSparkles, 
   RuneCheck 
 } from './icons/RuneIcons';
-import confetti from 'canvas-confetti';
+import { HometownLogo } from './icons/HometownLogo';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -43,8 +42,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             role: 'user',
             is_pro: false,
           });
-        } catch (pbErr) {
-          console.warn('PocketBase offline, proceeding with simulated registration');
+        } catch {
+          // offline simulation
         }
 
         const newUser: User = {
@@ -55,7 +54,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           is_pro: false,
         };
         onLoginSuccess(newUser);
-        celebrate();
         onClose();
       } else {
         try {
@@ -70,12 +68,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               avatar: authData.record.avatar,
             };
             onLoginSuccess(user);
-            celebrate();
             onClose();
             return;
           }
-        } catch (pbErr) {
-          console.warn('PocketBase offline or credentials not matched in live DB, using stateful demo user');
+        } catch {
+          // fallback demo user
         }
 
         // Fallback login
@@ -84,10 +81,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           email,
           name: email.split('@')[0],
           role: email.includes('admin') ? 'admin' : 'user',
-          is_pro: email.includes('pro'),
+          is_pro: email.includes('pro') || email.includes('supporter'),
         };
         onLoginSuccess(loggedUser);
-        celebrate();
         onClose();
       }
     } catch (err: unknown) {
@@ -98,20 +94,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
   };
 
-  const celebrate = () => {
-    try {
-      confetti({
-        particleCount: 30,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#6366f1', '#10b981'],
-      });
-    } catch {
-      // safe
-    }
-  };
-
-  const handleQuickLogin = (role: 'admin' | 'pro' | 'guest') => {
+  const handleQuickLogin = (role: 'admin' | 'supporter' | 'guest') => {
     if (role === 'admin') {
       onLoginSuccess({
         id: 'user-admin',
@@ -120,9 +103,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         role: 'admin',
         is_pro: true,
       });
-    } else if (role === 'pro') {
+    } else if (role === 'supporter') {
       onLoginSuccess({
-        id: 'user-pro',
+        id: 'user-supporter',
         name: 'Alex Vance',
         email: 'alex@startup.io',
         role: 'user',
@@ -131,13 +114,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     } else {
       onLoginSuccess({
         id: 'user-guest',
-        name: 'Guest Contributor',
-        email: 'guest@feedback.io',
+        name: 'Elena Rostova',
+        email: 'elena@community.io',
         role: 'user',
         is_pro: false,
       });
     }
-    celebrate();
     onClose();
   };
 
@@ -147,29 +129,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-[#0d0f17] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in my-8"
+        className="relative w-full max-w-md bg-[#0c0d12] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close dialog"
-          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors cursor-pointer"
         >
           <RuneX size={18} />
         </button>
 
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-400">
-            <RuneUser size={20} />
+        <div className="flex items-center gap-3.5 mb-6">
+          <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-200">
+            <HometownLogo size={20} />
           </div>
           <div>
             <h2 className="text-xl font-bold text-zinc-100 tracking-tight">
-              {mode === 'login' ? 'Sign In to FeedbackPulse' : 'Create an Account'}
+              {mode === 'login' ? 'Sign In to Hometown' : 'Create an Account'}
             </h2>
-            <p className="text-xs text-zinc-400">
-              Powered by PocketBase Authentication & REST API
+            <p className="text-xs text-zinc-400 mt-0.5">
+              PocketBase Backend Authentication
             </p>
           </div>
         </div>
@@ -179,9 +161,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="button"
             onClick={() => setMode('login')}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               mode === 'login'
-                ? 'bg-zinc-800 text-white shadow-sm'
+                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
@@ -190,9 +172,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="button"
             onClick={() => setMode('register')}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               mode === 'register'
-                ? 'bg-zinc-800 text-white shadow-sm'
+                ? 'bg-zinc-800 text-zinc-100 shadow-sm'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
@@ -218,8 +200,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Dmitri Allikvee"
-                className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-indigo-500 transition-colors"
+                placeholder="e.g. Elena Rostova"
+                className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
               />
             </div>
           )}
@@ -234,7 +216,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com"
-              className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
             />
           </div>
 
@@ -248,17 +230,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-98 transition-all shadow-md shadow-indigo-600/25 disabled:opacity-50 mt-2 cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-98 transition-all disabled:opacity-50 mt-2 cursor-pointer shadow-sm"
           >
             {loading ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <RuneCheck size={14} />
@@ -268,37 +250,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </form>
 
-        {/* 1-Click Demo Accounts (Extremely helpful for evaluator testing!) */}
+        {/* 1-Click Demo Accounts */}
         <div className="border-t border-zinc-800/80 mt-5 pt-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-2">
-            1-Click Instant Demo Login:
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+            1-Click Demo Testing:
           </p>
           <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => handleQuickLogin('admin')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-rose-500/40 hover:bg-rose-500/10 text-zinc-300 transition-all text-[11px]"
+              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-[11px] cursor-pointer"
             >
-              <RuneShield size={14} className="text-rose-400" />
-              <span className="font-semibold">Admin</span>
+              <RuneShield size={14} className="text-zinc-400" />
+              <span className="font-medium">Admin</span>
             </button>
 
             <button
               type="button"
-              onClick={() => handleQuickLogin('pro')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/40 hover:bg-amber-500/10 text-zinc-300 transition-all text-[11px]"
+              onClick={() => handleQuickLogin('supporter')}
+              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-[11px] cursor-pointer"
             >
-              <RuneCrown size={14} className="text-amber-400" />
-              <span className="font-semibold">PRO User</span>
+              <RuneCrown size={14} className="text-zinc-400" />
+              <span className="font-medium">Supporter</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickLogin('guest')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-indigo-500/40 hover:bg-indigo-500/10 text-zinc-300 transition-all text-[11px]"
+              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-[11px] cursor-pointer"
             >
-              <RuneSparkles size={14} className="text-indigo-400" />
-              <span className="font-semibold">Guest</span>
+              <RuneUser size={14} className="text-zinc-400" />
+              <span className="font-medium">Member</span>
             </button>
           </div>
         </div>

@@ -31,53 +31,53 @@ export const RoadmapProgressBar: React.FC<RoadmapProgressBarProps> = ({ posts })
       </div>
 
       {/* Multi-segment progress bar */}
-      <div className="h-2 w-full rounded-full bg-zinc-800/80 overflow-hidden flex">
+      <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden flex">
         {completed > 0 && (
           <div
             style={{ width: `${(completed / total) * 100}%` }}
-            className="h-full bg-emerald-500 transition-all duration-500"
+            className="h-full bg-emerald-500/80 transition-all duration-300"
             title={`Completed: ${completed} (${pctCompleted}%)`}
           />
         )}
         {inProgress > 0 && (
           <div
             style={{ width: `${(inProgress / total) * 100}%` }}
-            className="h-full bg-purple-500 transition-all duration-500"
+            className="h-full bg-purple-400/80 transition-all duration-300"
             title={`In Progress: ${inProgress} (${pctInProgress}%)`}
           />
         )}
         {planned > 0 && (
           <div
             style={{ width: `${(planned / total) * 100}%` }}
-            className="h-full bg-blue-500 transition-all duration-500"
+            className="h-full bg-blue-400/80 transition-all duration-300"
             title={`Planned: ${planned} (${pctPlanned}%)`}
           />
         )}
         {underReview > 0 && (
           <div
             style={{ width: `${(underReview / total) * 100}%` }}
-            className="h-full bg-amber-500 transition-all duration-500"
+            className="h-full bg-amber-400/80 transition-all duration-300"
             title={`Under Review: ${underReview} (${pctUnderReview}%)`}
           />
         )}
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mt-2.5 text-[11px] text-zinc-400">
+      <div className="flex flex-wrap items-center justify-between gap-2 mt-2 text-[11px] text-zinc-400">
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
           <span>Completed ({completed})</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-purple-500" />
+          <span className="w-1.5 h-1.5 rounded-full bg-purple-400/80" />
           <span>In Progress ({inProgress})</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-blue-500" />
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400/80" />
           <span>Planned ({planned})</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-amber-500" />
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80" />
           <span>Under Review ({underReview})</span>
         </div>
       </div>

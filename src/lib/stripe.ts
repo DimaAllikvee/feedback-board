@@ -16,22 +16,24 @@ export interface PricingPlan {
   popular?: boolean;
 }
 
-export const PRO_PLAN: PricingPlan = {
-  id: 'pro-membership',
-  name: 'PRO Supporter & Power User',
+export const SUPPORTER_PLAN: PricingPlan = {
+  id: 'supporter-membership',
+  name: 'Supporter Membership',
   price: '$9',
   period: 'month',
-  description: 'Unlock 3x upvote priority weight, unlimited feature proposals, and a glowing verified PRO badge.',
+  description: 'Unlock 3x upvote priority weight, unlimited feature proposals, and a verified Supporter badge.',
   popular: true,
   features: [
     '3x Upvote Priority Weight on all roadmap cards',
     'Unlimited feature proposals & feedback submissions',
-    'Exclusive glowing PRO Supporter badge on profile',
+    'Verified Supporter badge on profile and comments',
     'Direct moderation priority & roadmap influence',
-    'Early beta invite access for scheduled features',
+    'Early beta invite access for upcoming features',
     'Automatic Stripe Webhook payment verification'
   ]
 };
+
+export const PRO_PLAN = SUPPORTER_PLAN;
 
 // Stripe Test Mode Checkout simulator & webhook confirmation
 export const simulateStripeCheckout = async (_userId: string, _planId: string): Promise<{ success: boolean; transactionId: string }> => {
