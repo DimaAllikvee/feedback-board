@@ -36,6 +36,7 @@ import {
   ThumbsUp,
   Lightbulb,
   Heart,
+  AlertTriangle,
   Bookmark,
   LucideProps
 } from 'lucide-react';
@@ -99,5 +100,6 @@ export const RuneThumbsUp = createRuneIcon(ThumbsUp, 2);
 export const RuneLightbulb = createRuneIcon(Lightbulb, 2);
 export const RuneHeart = createRuneIcon(Heart, 2);
 export const RuneBookmark = createRuneIcon(Bookmark, 2);
+export const RuneAlertTriangle = createRuneIcon(AlertTriangle, 2);
 
 

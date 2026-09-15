@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { pb } from '../lib/pocketbase';
 import { User, UserRole } from '../types';
 import { 
@@ -7,7 +7,8 @@ import {
   RuneShield, 
   RuneCrown, 
   RuneX, 
-  RuneCheck 
+  RuneCheck,
+  RuneAlertTriangle
 } from './icons/RuneIcons';
 import { HometownLogo } from './icons/HometownLogo';
 
@@ -32,96 +33,155 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setError(null);
     setLoading(true);
 
+    const cleanEmail = email.trim();
+
     try {
       if (mode === 'register') {
+        if (password.length < 8) {
+          setError('Password must be at least 8 characters long.');
+          setLoading(false);
+          return;
+        }
+
         try {
           await pb.collection('users').create({
-            email,
+            email: cleanEmail,
             password,
             passwordConfirm: password,
-            name: name || email.split('@')[0],
+            name: name.trim() || cleanEmail.split('@')[0],
             role: 'user',
             is_pro: false,
           });
-        } catch {
-          // offline simulation
-        }
 
-        const newUser: User = {
-          id: `user-${Date.now()}`,
-          email,
-          name: name || email.split('@')[0],
-          role: 'user',
-          is_pro: false,
-        };
-        onLoginSuccess(newUser);
-        onClose();
-      } else {
-        try {
-          const authData = await pb.collection('users').authWithPassword(email, password);
-          if (authData?.record) {
-            const user: User = {
-              id: authData.record.id,
-              email: authData.record.email,
-              name: authData.record.name || authData.record.email,
-              role: (authData.record.role as UserRole) || 'user',
-              is_pro: Boolean(authData.record.is_pro),
-              avatar: authData.record.avatar,
-            };
-            onLoginSuccess(user);
-            onClose();
-            return;
+          // Authenticate immediately after registration
+          const authData = await pb.collection('users').authWithPassword(cleanEmail, password);
+          const user: User = {
+            id: authData.record.id,
+            email: authData.record.email,
+            name: authData.record.name || name.trim() || cleanEmail.split('@')[0],
+            role: (authData.record.role as UserRole) || 'user',
+            is_pro: Boolean(authData.record.is_pro),
+            avatar: authData.record.avatar,
+          };
+          onLoginSuccess(user);
+          onClose();
+        } catch (regErr: any) {
+          console.error('[PocketBase Register Failed]:', regErr);
+          const dataErr = regErr?.data?.data || {};
+          let msg = regErr?.message || 'Failed to register account.';
+
+          if (dataErr.email?.code === 'validation_not_unique') {
+            msg = 'An account with this email address already exists. Please sign in instead.';
+          } else if (dataErr.password?.message) {
+            msg = dataErr.password.message;
           }
+
+          setError(msg);
+        }
+      } else {
+        // Mode === 'login'
+        let authRecord: any = null;
+
+        // 1. Try regular users collection
+        try {
+          const authData = await pb.collection('users').authWithPassword(cleanEmail, password);
+          authRecord = authData?.record;
         } catch {
-          // fallback demo user
+          // 2. Also check _superusers collection (for PocketBase admin / superuser accounts)
+          try {
+            const superAuth = await pb.collection('_superusers').authWithPassword(cleanEmail, password);
+            if (superAuth?.record) {
+              authRecord = {
+                id: superAuth.record.id,
+                email: superAuth.record.email,
+                name: 'Dmitri Allikvee (Admin)',
+                role: 'admin',
+                is_pro: true,
+              };
+            }
+          } catch {
+            // Superuser auth also failed
+          }
         }
 
-        // Fallback login
-        const loggedUser: User = {
-          id: `user-${email.replace(/[^a-zA-Z0-9]/g, '')}`,
-          email,
-          name: email.split('@')[0],
-          role: email.includes('admin') ? 'admin' : 'user',
-          is_pro: email.includes('pro') || email.includes('supporter'),
-        };
-        onLoginSuccess(loggedUser);
-        onClose();
+        if (authRecord) {
+          const user: User = {
+            id: authRecord.id,
+            email: authRecord.email,
+            name: authRecord.name || authRecord.email?.split('@')[0] || 'Member',
+            role: (authRecord.role as UserRole) || 'user',
+            is_pro: Boolean(authRecord.is_pro),
+            avatar: authRecord.avatar,
+          };
+          onLoginSuccess(user);
+          onClose();
+          return;
+        }
+
+        // Authentication failed — strictly reject, NO mock user fallback!
+        setError('Invalid email or password. Please verify your credentials or create a new account.');
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Authentication failed';
+      const message = err instanceof Error ? err.message : 'Authentication error';
       setError(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickLogin = (role: 'admin' | 'supporter' | 'guest') => {
+  const handleQuickLogin = async (role: 'admin' | 'supporter' | 'guest') => {
+    setError(null);
+    setLoading(true);
+
+    let targetEmail = 'member@hometown.io';
+    let targetPass = 'Password1234!';
+
     if (role === 'admin') {
-      onLoginSuccess({
-        id: 'user-admin',
-        name: 'Dmitri Allikvee',
-        email: 'dmitri@admin.io',
-        role: 'admin',
-        is_pro: true,
-      });
+      targetEmail = 'dmitri@admin.io';
+      targetPass = 'Password1234!';
     } else if (role === 'supporter') {
-      onLoginSuccess({
-        id: 'user-supporter',
-        name: 'Alex Vance',
-        email: 'alex@startup.io',
-        role: 'user',
-        is_pro: true,
-      });
-    } else {
-      onLoginSuccess({
-        id: 'user-guest',
-        name: 'Elena Rostova',
-        email: 'elena@community.io',
-        role: 'user',
-        is_pro: false,
-      });
+      targetEmail = 'supporter@hometown.io';
+      targetPass = 'Password1234!';
     }
-    onClose();
+
+    try {
+      let authRecord: any = null;
+      try {
+        const authData = await pb.collection('users').authWithPassword(targetEmail, targetPass);
+        authRecord = authData?.record;
+      } catch {
+        if (role === 'admin') {
+          const superAuth = await pb.collection('_superusers').authWithPassword(targetEmail, targetPass);
+          if (superAuth?.record) {
+            authRecord = {
+              id: superAuth.record.id,
+              email: superAuth.record.email,
+              name: 'Dmitri Allikvee (Admin)',
+              role: 'admin',
+              is_pro: true,
+            };
+          }
+        }
+      }
+
+      if (authRecord) {
+        const user: User = {
+          id: authRecord.id,
+          email: authRecord.email,
+          name: authRecord.name || (role === 'admin' ? 'Dmitri Allikvee' : role === 'supporter' ? 'Elena Rostova' : 'Marcus Chen'),
+          role: (authRecord.role as UserRole) || (role === 'admin' ? 'admin' : 'user'),
+          is_pro: role === 'admin' || role === 'supporter' || Boolean(authRecord.is_pro),
+        };
+        onLoginSuccess(user);
+        onClose();
+      } else {
+        setError(`Failed to authenticate demo account ${targetEmail} against PocketBase.`);
+      }
+    } catch (err: any) {
+      setError(`Auth error: ${err.message || err}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -171,7 +231,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div className="flex items-center rounded-xl bg-zinc-900 p-1 border border-zinc-800 mb-5">
           <button
             type="button"
-            onClick={() => setMode('login')}
+            onClick={() => { setMode('login'); setError(null); }}
             className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               mode === 'login'
                 ? 'bg-zinc-800 text-zinc-100 shadow-sm'
@@ -182,7 +242,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setMode('register')}
+            onClick={() => { setMode('register'); setError(null); }}
             className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               mode === 'register'
                 ? 'bg-zinc-800 text-zinc-100 shadow-sm'
@@ -193,11 +253,40 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </div>
 
-        {error && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 mb-4">
-            {error}
-          </div>
-        )}
+        {/* Error Alert */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -4 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -4 }}
+              transition={{ duration: 0.14 }}
+              role="alert"
+              className="p-3.5 mb-5 rounded-xl bg-rose-950/70 border border-rose-500/40 text-rose-200 text-xs leading-relaxed overflow-hidden"
+            >
+              <div className="flex items-start gap-2.5">
+                <RuneAlertTriangle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-rose-200">{error}</p>
+                  
+                  {/* Mode switch helper if not registered */}
+                  {mode === 'login' && (
+                    <p className="text-[11px] text-zinc-400 mt-1">
+                      Don't have an account yet?{' '}
+                      <button
+                        type="button"
+                        onClick={() => { setMode('register'); setError(null); }}
+                        className="text-rose-300 hover:text-white font-medium underline underline-offset-2 cursor-pointer"
+                      >
+                        Create an account here
+                      </button>
+                    </p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -270,28 +359,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="button"
               onClick={() => handleQuickLogin('admin')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-[11px] cursor-pointer"
+              className="flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-center cursor-pointer min-h-[82px]"
             >
-              <RuneShield size={14} className="text-zinc-400" />
-              <span className="font-medium">Admin</span>
+              <div className="w-7 h-7 rounded-lg bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-rose-400 shrink-0">
+                <RuneShield size={14} className="shrink-0" />
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[11px] font-medium text-zinc-200">Admin</span>
+                <span className="text-[9px] text-rose-400 font-mono">Superuser</span>
+              </div>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickLogin('supporter')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-[11px] cursor-pointer"
+              className="flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-center cursor-pointer min-h-[82px]"
             >
-              <RuneCrown size={14} className="text-zinc-400" />
-              <span className="font-medium">Supporter</span>
+              <div className="w-7 h-7 rounded-lg bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-emerald-400 shrink-0">
+                <RuneCrown size={14} className="shrink-0 -translate-y-0.5" />
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[11px] font-medium text-zinc-200">Supporter</span>
+                <span className="text-[9px] text-emerald-400 font-mono">3x Votes</span>
+              </div>
             </button>
 
             <button
               type="button"
               onClick={() => handleQuickLogin('guest')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-[11px] cursor-pointer"
+              className="flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-center cursor-pointer min-h-[82px]"
             >
-              <RuneUser size={14} className="text-zinc-400" />
-              <span className="font-medium">Member</span>
+              <div className="w-7 h-7 rounded-lg bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-zinc-400 shrink-0">
+                <RuneUser size={14} className="shrink-0" />
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[11px] font-medium text-zinc-200">Member</span>
+                <span className="text-[9px] text-zinc-500 font-mono">Standard</span>
+              </div>
             </button>
           </div>
         </div>

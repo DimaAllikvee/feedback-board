@@ -108,7 +108,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </p>
 
               {/* Cards column */}
-              <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-1">
+              <div className="flex flex-col gap-3 flex-1 overflow-y-auto pt-2 pb-2 px-1 -mx-1">
                 {colPosts.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-40 border border-dashed border-zinc-800/80 rounded-xl p-4 text-center">
                     <p className="text-xs text-zinc-400">No ideas in this column yet</p>

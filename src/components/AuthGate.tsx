@@ -14,7 +14,8 @@ import {
   RuneLock,
   RuneEye,
   RuneEyeOff,
-  RuneArrowRight
+  RuneArrowRight,
+  RuneAlertTriangle
 } from './icons/RuneIcons';
 
 interface AuthGateProps {
@@ -35,6 +36,8 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
     setError(null);
     setLoading(true);
 
+    const cleanEmail = email.trim();
+
     try {
       if (mode === 'register') {
         if (!name.trim()) {
@@ -46,15 +49,31 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
 
         try {
           await pb.collection('users').create({
-            email,
+            email: cleanEmail,
             password,
             passwordConfirm: password,
             name: name.trim(),
             role: 'user',
             is_pro: false,
           });
+        } catch (regErr: any) {
+          console.error('[PocketBase Register Error]:', regErr);
+          let userMsg = 'Registration failed. Please check the form fields.';
+          if (regErr?.data?.data?.email?.code === 'validation_not_unique' || regErr?.data?.data?.email?.message) {
+            userMsg = 'An account with this email address already exists. Please sign in instead.';
+          } else if (regErr?.data?.data?.password?.message) {
+            userMsg = `Password error: ${regErr.data.data.password.message}`;
+          } else if (regErr?.message) {
+            userMsg = regErr.message;
+          }
+          
+          setError(userMsg);
+          return;
+        }
 
-          const authData = await pb.collection('users').authWithPassword(email, password);
+        // Authenticate the newly created user
+        try {
+          const authData = await pb.collection('users').authWithPassword(cleanEmail, password);
           const user: User = {
             id: authData.record.id,
             email: authData.record.email,
@@ -66,45 +85,50 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
           onLoginSuccess(user);
           return;
         } catch {
-          // Fallback registration simulation
-          const fallbackUser: User = {
-            id: `user-${Date.now()}`,
-            email,
-            name: name.trim(),
-            role: 'user',
-            is_pro: false,
-          };
-          onLoginSuccess(fallbackUser);
+          setError('Account was created, but initial sign-in failed. Please click Sign In.');
           return;
         }
       } else {
         // Mode: login
+        let authRecord: any = null;
+
+        // 1. Try public users collection
         try {
-          const authData = await pb.collection('users').authWithPassword(email, password);
-          if (authData?.record) {
-            const user: User = {
-              id: authData.record.id,
-              email: authData.record.email,
-              name: authData.record.name || authData.record.email,
-              role: (authData.record.role as UserRole) || 'user',
-              is_pro: Boolean(authData.record.is_pro),
-              avatar: authData.record.avatar,
-            };
-            onLoginSuccess(user);
-            return;
-          }
+          const authData = await pb.collection('users').authWithPassword(cleanEmail, password);
+          authRecord = authData?.record;
         } catch {
-          // Fallback login simulation
+          // 2. Also check _superusers collection (for PocketBase admin / superuser accounts)
+          try {
+            const superAuth = await pb.collection('_superusers').authWithPassword(cleanEmail, password);
+            if (superAuth?.record) {
+              authRecord = {
+                id: superAuth.record.id,
+                email: superAuth.record.email,
+                name: 'Dmitri Allikvee (Admin)',
+                role: 'admin',
+                is_pro: true,
+              };
+            }
+          } catch {
+            // Superuser auth also failed
+          }
         }
 
-        const loggedUser: User = {
-          id: `user-${email.replace(/[^a-zA-Z0-9]/g, '')}`,
-          email,
-          name: email.split('@')[0],
-          role: email.includes('admin') ? 'admin' : 'user',
-          is_pro: email.includes('pro') || email.includes('supporter'),
-        };
-        onLoginSuccess(loggedUser);
+        if (authRecord) {
+          const user: User = {
+            id: authRecord.id,
+            email: authRecord.email,
+            name: authRecord.name || authRecord.email?.split('@')[0] || 'Member',
+            role: (authRecord.role as UserRole) || 'user',
+            is_pro: Boolean(authRecord.is_pro),
+            avatar: authRecord.avatar,
+          };
+          onLoginSuccess(user);
+          return;
+        }
+
+        // Authentication failed — strictly reject, NO mock user!
+        setError('Invalid email or password. Please verify your credentials or create a new account.');
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Authentication failed';
@@ -114,31 +138,50 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleQuickLogin = (role: 'admin' | 'supporter' | 'guest') => {
+  const handleQuickLogin = async (role: 'admin' | 'supporter' | 'guest') => {
+    setError(null);
+    setLoading(true);
+
+    let targetEmail = 'member@hometown.io';
+    let targetPass = 'Password1234!';
+
     if (role === 'admin') {
-      onLoginSuccess({
-        id: 'user-admin',
-        name: 'Alex Vance (Lead)',
-        email: 'alex.vance@hometown.io',
-        role: 'admin',
-        is_pro: true,
-      });
+      targetEmail = 'dmitri@admin.io';
+      targetPass = 'Password1234!';
     } else if (role === 'supporter') {
-      onLoginSuccess({
-        id: 'user-supporter',
-        name: 'Elena Rostova',
-        email: 'elena.rostova@hometown.io',
-        role: 'user',
-        is_pro: true,
-      });
-    } else {
-      onLoginSuccess({
-        id: 'user-guest',
-        name: 'Marcus Chen',
-        email: 'marcus.chen@hometown.io',
-        role: 'user',
-        is_pro: false,
-      });
+      targetEmail = 'supporter@hometown.io';
+      targetPass = 'Password1234!';
+    }
+
+    try {
+      let authRecord: any = null;
+      try {
+        const authData = await pb.collection('users').authWithPassword(targetEmail, targetPass);
+        authRecord = authData?.record;
+      } catch {
+        if (role === 'admin') {
+          const superAuth = await pb.collection('_superusers').authWithPassword(targetEmail, targetPass);
+          authRecord = superAuth?.record;
+        }
+      }
+
+      if (authRecord) {
+        onLoginSuccess({
+          id: authRecord.id,
+          email: authRecord.email,
+          name: authRecord.name || (role === 'admin' ? 'Dmitri Allikvee (Admin)' : role === 'supporter' ? 'Elena Rostova' : 'Marcus Chen'),
+          role: (authRecord.role as UserRole) || (role === 'admin' ? 'admin' : 'user'),
+          is_pro: Boolean(authRecord.is_pro) || role === 'admin' || role === 'supporter',
+        });
+        return;
+      }
+
+      throw new Error(`Could not authenticate demo profile for ${targetEmail}`);
+    } catch (err: any) {
+      console.error('[Quick Login Error]:', err);
+      setError(`Demo account login failed for ${targetEmail}.`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -226,9 +269,28 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
               exit={{ opacity: 0, height: 0, y: -4 }}
               transition={{ duration: 0.14 }}
               role="alert"
-              className="p-3 mb-5 rounded-xl bg-rose-950/50 border border-rose-500/30 text-rose-300 text-xs leading-relaxed overflow-hidden"
+              className="p-3.5 mb-5 rounded-xl bg-rose-950/70 border border-rose-500/40 text-rose-200 text-xs leading-relaxed overflow-hidden"
             >
-              {error}
+              <div className="flex items-start gap-2.5">
+                <RuneAlertTriangle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-rose-200">{error}</p>
+                  
+                  {/* Mode switch helper if not registered */}
+                  {mode === 'login' && (
+                    <p className="text-[11px] text-zinc-400 mt-1">
+                      Don't have an account yet?{' '}
+                      <button
+                        type="button"
+                        onClick={() => { setMode('register'); setError(null); }}
+                        className="text-rose-300 hover:text-white font-medium underline underline-offset-2 cursor-pointer"
+                      >
+                        Create an account here
+                      </button>
+                    </p>
+                  )}
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -311,7 +373,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             {loading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-3.5 h-3.5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
-                <span>Authenticating...</span>
+                <span>Verifying with Database...</span>
               </div>
             ) : (
               <>
@@ -328,7 +390,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
               1-Click Evaluation Profiles
             </span>
-            <span className="text-[10px] text-zinc-500 font-mono">Grading Demo</span>
+            <span className="text-[10px] text-zinc-500 font-mono">Live DB Auth</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
@@ -336,15 +398,17 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="button"
+              disabled={loading}
               onClick={() => handleQuickLogin('admin')}
-              className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 transition-[background-color,border-color] duration-100 text-left cursor-pointer select-none"
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 transition-all text-center cursor-pointer select-none disabled:opacity-50 min-h-[90px]"
+              title="Authenticate as Admin (PocketBase Superuser)"
             >
-              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-rose-400 group-hover:text-rose-300 transition-colors">
-                <RuneShield size={14} />
+              <div className="w-8 h-8 rounded-xl bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-rose-400 group-hover:text-rose-300 transition-colors shrink-0">
+                <RuneShield size={16} className="shrink-0" />
               </div>
-              <div className="text-center">
-                <div className="text-[11px] font-semibold text-zinc-200">Admin</div>
-                <div className="text-[9px] text-zinc-500">Moderator</div>
+              <div className="flex flex-col items-center">
+                <div className="text-xs font-semibold text-zinc-200">Admin</div>
+                <div className="text-[10px] text-rose-400 font-mono">Superuser</div>
               </div>
             </motion.button>
 
@@ -352,15 +416,17 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="button"
+              disabled={loading}
               onClick={() => handleQuickLogin('supporter')}
-              className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 transition-[background-color,border-color] duration-100 text-left cursor-pointer select-none"
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 transition-all text-center cursor-pointer select-none disabled:opacity-50 min-h-[90px]"
+              title="Authenticate as Supporter (3x Priority)"
             >
-              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-200 group-hover:text-white transition-colors">
-                <RuneCrown size={14} />
+              <div className="w-8 h-8 rounded-xl bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-emerald-400 group-hover:text-emerald-300 transition-colors shrink-0">
+                <RuneCrown size={16} className="shrink-0 -translate-y-0.5" />
               </div>
-              <div className="text-center">
-                <div className="text-[11px] font-semibold text-zinc-200">Supporter</div>
-                <div className="text-[9px] text-emerald-400 font-mono">3x Votes</div>
+              <div className="flex flex-col items-center">
+                <div className="text-xs font-semibold text-zinc-200">Supporter</div>
+                <div className="text-[10px] text-emerald-400 font-mono">3x Votes</div>
               </div>
             </motion.button>
 
@@ -368,15 +434,17 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               type="button"
+              disabled={loading}
               onClick={() => handleQuickLogin('guest')}
-              className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 transition-[background-color,border-color] duration-100 text-left cursor-pointer select-none"
+              className="group flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 transition-all text-center cursor-pointer select-none disabled:opacity-50 min-h-[90px]"
+              title="Authenticate as Standard Member"
             >
-              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 transition-colors">
-                <RuneUser size={14} />
+              <div className="w-8 h-8 rounded-xl bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 transition-colors shrink-0">
+                <RuneUser size={16} className="shrink-0" />
               </div>
-              <div className="text-center">
-                <div className="text-[11px] font-semibold text-zinc-200">Member</div>
-                <div className="text-[9px] text-zinc-500">Standard</div>
+              <div className="flex flex-col items-center">
+                <div className="text-xs font-semibold text-zinc-200">Member</div>
+                <div className="text-[10px] text-zinc-500 font-mono">Standard</div>
               </div>
             </motion.button>
           </div>
