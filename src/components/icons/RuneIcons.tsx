@@ -28,6 +28,10 @@ import {
   ArrowUpDown,
   Flame,
   Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  ArrowRight,
   Edit2,
   ThumbsUp,
   Lightbulb,
@@ -86,6 +90,10 @@ export const RunePalette = createRuneIcon(Palette, 2);
 export const RuneArrowUpDown = createRuneIcon(ArrowUpDown, 2);
 export const RuneFlame = createRuneIcon(Flame, 2);
 export const RuneEye = createRuneIcon(Eye, 2);
+export const RuneEyeOff = createRuneIcon(EyeOff, 2);
+export const RuneLock = createRuneIcon(Lock, 2);
+export const RuneMail = createRuneIcon(Mail, 2);
+export const RuneArrowRight = createRuneIcon(ArrowRight, 2.2);
 export const RuneEdit = createRuneIcon(Edit2, 2);
 export const RuneThumbsUp = createRuneIcon(ThumbsUp, 2);
 export const RuneLightbulb = createRuneIcon(Lightbulb, 2);

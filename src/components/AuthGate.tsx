@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { pb } from '../lib/pocketbase';
 import { User, UserRole } from '../types';
 import { HometownLogo } from './icons/HometownLogo';
@@ -9,7 +9,12 @@ import {
   RuneCrown, 
   RuneKanban,
   RuneZap,
-  RuneMessageSquare
+  RuneMessageSquare,
+  RuneMail,
+  RuneLock,
+  RuneEye,
+  RuneEyeOff,
+  RuneArrowRight
 } from './icons/RuneIcons';
 
 interface AuthGateProps {
@@ -21,6 +26,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -137,186 +143,267 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col items-center justify-center py-10 px-4 sm:px-6">
+    <div className="relative w-full flex-1 flex flex-col items-center justify-center py-10 sm:py-16 px-4 sm:px-6">
       
-      {/* Brand Heading */}
+      {/* Background Ambient Radial Glow & Texture (Cal.com / KeenThemes pattern) */}
+      <div 
+        className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center"
+        aria-hidden="true"
+      >
+        <div className="h-[450px] w-[600px] max-w-full rounded-full bg-indigo-500/5 blur-[120px]" />
+        <div className="absolute top-1/4 h-[300px] w-[400px] rounded-full bg-zinc-700/5 blur-[90px]" />
+      </div>
+
+      {/* Brand Header */}
       <motion.div 
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center max-w-xl mb-8"
+        className="text-center max-w-lg mb-8"
       >
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-xl mb-4">
-          <HometownLogo size={28} />
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-100 shadow-xl mb-4 hover:border-zinc-700 transition-colors">
+          <HometownLogo size={24} />
         </div>
+
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            Hometown Community
+          </span>
+          <span className="w-1 h-1 rounded-full bg-zinc-600" />
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Active Board
+          </span>
+        </div>
+
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100">
-          Sign In to Access Hometown
+          Sign In to Access Board
         </h1>
         <p className="text-xs sm:text-sm text-zinc-400 mt-2 leading-relaxed">
-          Authenticate to explore the community roadmap, submit proposals, cast priority votes, and participate in feature discussions.
+          Authenticate to explore feature milestones, cast priority votes with supporter weights, and participate in technical debates.
         </p>
       </motion.div>
 
-      {/* Main Authentication Card */}
+      {/* Main Authentication Card (coss.com / shadcn / reui inspired) */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.97, y: 8 }}
+        initial={{ opacity: 0, scale: 0.98, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-md bg-[#0c0d12] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden"
+        className="w-full max-w-[440px] bg-[#0c0d12]/90 backdrop-blur-2xl border border-zinc-800/90 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden"
       >
-        {/* Tab switch between Sign In and Create Account */}
-        <div className="flex rounded-xl bg-zinc-900/90 p-1 border border-zinc-800 mb-6">
-          <motion.button
-            whileTap={{ scale: 0.97 }}
+        {/* Emil Kowalski Sliding Tab Switcher */}
+        <div className="flex rounded-xl bg-zinc-900/90 p-1 border border-zinc-800/80 mb-6">
+          <button
             type="button"
             onClick={() => { setMode('login'); setError(null); }}
-            className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer select-none ${
-              mode === 'login'
-                ? 'bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/80 font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
+            className={`relative flex-1 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer select-none ${
+              mode === 'login' ? 'text-zinc-100 font-semibold' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            Sign In
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.97 }}
+            {mode === 'login' && (
+              <motion.span
+                layoutId="activeAuthGateTab"
+                className="absolute inset-0 rounded-lg bg-zinc-800 border border-zinc-700/80 shadow-sm"
+                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              />
+            )}
+            <span className="relative z-10">Sign In</span>
+          </button>
+          
+          <button
             type="button"
             onClick={() => { setMode('register'); setError(null); }}
-            className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer select-none ${
-              mode === 'register'
-                ? 'bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/80 font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
+            className={`relative flex-1 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer select-none ${
+              mode === 'register' ? 'text-zinc-100 font-semibold' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            Create Account
-          </motion.button>
+            {mode === 'register' && (
+              <motion.span
+                layoutId="activeAuthGateTab"
+                className="absolute inset-0 rounded-lg bg-zinc-800 border border-zinc-700/80 shadow-sm"
+                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              />
+            )}
+            <span className="relative z-10">Create Account</span>
+          </button>
         </div>
 
-        {error && (
-          <div className="p-3 mb-5 rounded-xl bg-rose-950/50 border border-rose-500/30 text-rose-300 text-xs leading-relaxed">
-            {error}
-          </div>
-        )}
+        {/* Error Alert */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -4 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -4 }}
+              transition={{ duration: 0.14 }}
+              role="alert"
+              className="p-3 mb-5 rounded-xl bg-rose-950/50 border border-rose-500/30 text-rose-300 text-xs leading-relaxed overflow-hidden"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
+        {/* Form Elements with Design System Checklist compliance */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'register' && (
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+              <label htmlFor="auth-name" className="block text-xs font-medium text-zinc-300 mb-1.5">
                 Full Name
               </label>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Alex Vance"
-                className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 px-3.5 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
-              />
+              <div className="relative flex items-center">
+                <RuneUser size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                <input
+                  id="auth-name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Alex Vance"
+                  className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 focus:border-zinc-500 transition-all"
+                />
+              </div>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+            <label htmlFor="auth-email" className="block text-xs font-medium text-zinc-300 mb-1.5">
               Email Address
             </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 px-3.5 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
-            />
+            <div className="relative flex items-center">
+              <RuneMail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <input
+                id="auth-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 focus:border-zinc-500 transition-all"
+              />
+            </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 px-3.5 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label htmlFor="auth-password" className="text-xs font-medium text-zinc-300">
+                Password
+              </label>
+              <span className="text-[10px] text-zinc-500">Min. 8 characters</span>
+            </div>
+            <div className="relative flex items-center">
+              <RuneLock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <input
+                id="auth-password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 pl-10 pr-10 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 focus:border-zinc-500 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 p-1 cursor-pointer transition-colors"
+              >
+                {showPassword ? <RuneEyeOff size={15} /> : <RuneEye size={15} />}
+              </button>
+            </div>
           </div>
 
           <motion.button
             whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={loading}
-            className="w-full mt-2 py-3 px-4 rounded-xl text-xs font-semibold text-zinc-950 bg-zinc-100 hover:bg-white transition-[background-color,transform] duration-100 cursor-pointer disabled:opacity-50 select-none shadow-sm"
+            className="w-full mt-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-950 bg-zinc-100 hover:bg-white transition-[background-color,transform] duration-100 cursor-pointer disabled:opacity-50 select-none shadow-sm flex items-center justify-center gap-2"
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-3.5 h-3.5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
-                <span>Processing...</span>
+                <span>Authenticating...</span>
               </div>
-            ) : mode === 'login' ? (
-              'Sign In to Board'
             ) : (
-              'Create Account'
+              <>
+                <span>{mode === 'login' ? 'Sign In to Board' : 'Create Account'}</span>
+                <RuneArrowRight size={14} />
+              </>
             )}
           </motion.button>
         </form>
 
-        {/* 1-Click Fast Demo Logins for Evaluation & Grading */}
+        {/* KeenThemes ReUI Style: 1-Click Evaluation / Demo Access */}
         <div className="mt-6 pt-5 border-t border-zinc-800/80">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-              1-Click Demo Evaluation
+              1-Click Evaluation Profiles
             </span>
-            <span className="text-[10px] text-zinc-500 font-mono">Instant Access</span>
+            <span className="text-[10px] text-zinc-500 font-mono">Grading Demo</span>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
+            {/* Admin Profile */}
             <motion.button
-              whileTap={{ scale: 0.94 }}
+              whileTap={{ scale: 0.95 }}
               type="button"
               onClick={() => handleQuickLogin('admin')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 text-zinc-300 transition-[background-color,border-color] duration-100 text-[11px] cursor-pointer select-none"
+              className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 transition-[background-color,border-color] duration-100 text-left cursor-pointer select-none"
             >
-              <RuneShield size={14} className="text-rose-400 shrink-0" />
-              <span className="font-semibold text-zinc-200">Admin</span>
-              <span className="text-[9px] text-zinc-500">Moderator</span>
+              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-rose-400 group-hover:text-rose-300 transition-colors">
+                <RuneShield size={14} />
+              </div>
+              <div className="text-center">
+                <div className="text-[11px] font-semibold text-zinc-200">Admin</div>
+                <div className="text-[9px] text-zinc-500">Moderator</div>
+              </div>
             </motion.button>
 
+            {/* Supporter Profile */}
             <motion.button
-              whileTap={{ scale: 0.94 }}
+              whileTap={{ scale: 0.95 }}
               type="button"
               onClick={() => handleQuickLogin('supporter')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 text-zinc-300 transition-[background-color,border-color] duration-100 text-[11px] cursor-pointer select-none"
+              className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 transition-[background-color,border-color] duration-100 text-left cursor-pointer select-none"
             >
-              <RuneCrown size={14} className="text-zinc-200 shrink-0" />
-              <span className="font-semibold text-zinc-200">Supporter</span>
-              <span className="text-[9px] text-zinc-500">3x Votes</span>
+              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-200 group-hover:text-white transition-colors">
+                <RuneCrown size={14} />
+              </div>
+              <div className="text-center">
+                <div className="text-[11px] font-semibold text-zinc-200">Supporter</div>
+                <div className="text-[9px] text-emerald-400 font-mono">3x Votes</div>
+              </div>
             </motion.button>
 
+            {/* Member Profile */}
             <motion.button
-              whileTap={{ scale: 0.94 }}
+              whileTap={{ scale: 0.95 }}
               type="button"
               onClick={() => handleQuickLogin('guest')}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 text-zinc-300 transition-[background-color,border-color] duration-100 text-[11px] cursor-pointer select-none"
+              className="group flex flex-col items-center gap-1.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/80 transition-[background-color,border-color] duration-100 text-left cursor-pointer select-none"
             >
-              <RuneUser size={14} className="text-zinc-400 shrink-0" />
-              <span className="font-semibold text-zinc-200">Member</span>
-              <span className="text-[9px] text-zinc-500">Standard</span>
+              <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 transition-colors">
+                <RuneUser size={14} />
+              </div>
+              <div className="text-center">
+                <div className="text-[11px] font-semibold text-zinc-200">Member</div>
+                <div className="text-[9px] text-zinc-500">Standard</div>
+              </div>
             </motion.button>
           </div>
         </div>
+
       </motion.div>
 
-      {/* Feature Highlights Underneath */}
+      {/* Feature Highlights Underneath (Concentric Radius & Calm Palette) */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full mt-8"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl w-full mt-8"
       >
         <div className="p-4 rounded-2xl bg-zinc-950/60 border border-zinc-800/60 text-center">
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-2.5">
+          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-2">
             <RuneKanban size={15} />
           </div>
           <h3 className="text-xs font-semibold text-zinc-200">Kanban Roadmap</h3>
@@ -326,7 +413,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
         </div>
 
         <div className="p-4 rounded-2xl bg-zinc-950/60 border border-zinc-800/60 text-center">
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-2.5">
+          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-2">
             <RuneZap size={15} />
           </div>
           <h3 className="text-xs font-semibold text-zinc-200">Priority Upvoting</h3>
@@ -336,7 +423,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
         </div>
 
         <div className="p-4 rounded-2xl bg-zinc-950/60 border border-zinc-800/60 text-center">
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-2.5">
+          <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 mb-2">
             <RuneMessageSquare size={15} />
           </div>
           <h3 className="text-xs font-semibold text-zinc-200">Community Debates</h3>
@@ -349,3 +436,5 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
     </div>
   );
 };
+
+export default AuthGate;
