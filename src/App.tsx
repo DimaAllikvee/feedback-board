@@ -20,6 +20,7 @@ import { NewPostModal } from './components/NewPostModal';
 import { StripeProModal } from './components/StripeProModal';
 import { AuthModal } from './components/AuthModal';
 import { AuthGate } from './components/AuthGate';
+import { ShowcaseModal } from './components/ShowcaseModal';
 import { ToastStack, ToastMessage } from './components/ui/Toast';
 import { RuneCrown } from './components/icons/RuneIcons';
 
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const [isStripeModalOpen, setIsStripeModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isShowcaseOpen, setIsShowcaseOpen] = useState(false);
 
   // Search input ref for keyboard shortcut (⌘K / /)
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -118,12 +120,13 @@ export const App: React.FC = () => {
         setIsNewPostOpen(false);
         setIsStripeModalOpen(false);
         setIsAuthModalOpen(false);
+        setIsShowcaseOpen(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentUser, selectedPost, isNewPostOpen, isStripeModalOpen, isAuthModalOpen]);
+  }, [currentUser, selectedPost, isNewPostOpen, isStripeModalOpen, isAuthModalOpen, isShowcaseOpen]);
 
   // Load live data from PocketBase (fallback to initial posts if PB empty or offline)
   useEffect(() => {
@@ -519,10 +522,18 @@ export const App: React.FC = () => {
       {/* Clean Minimalist Footer */}
       <footer className="border-t border-zinc-800/80 bg-zinc-950 py-6 text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-center">
             <span className="font-medium text-zinc-300">Hometown Board</span>
             <span>•</span>
             <span>Community Feedback & Roadmap</span>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => setIsShowcaseOpen(true)}
+              className="text-zinc-400 hover:text-zinc-200 underline underline-offset-4 cursor-pointer transition-colors"
+            >
+              Component Showcase
+            </button>
           </div>
           <div className="flex items-center gap-3 text-zinc-400">
             <span className="flex items-center gap-1.5">
@@ -537,6 +548,17 @@ export const App: React.FC = () => {
 
       {/* Toast Notification Stack */}
       <ToastStack toasts={toasts} onDismiss={handleDismissToast} />
+
+      {/* Component Showcase Modal (Ref.tools protocol) */}
+      <AnimatePresence>
+        {isShowcaseOpen && (
+          <ShowcaseModal
+            isOpen={isShowcaseOpen}
+            onClose={() => setIsShowcaseOpen(false)}
+            onTriggerToast={addToast}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Post Details Modal */}
       <AnimatePresence>

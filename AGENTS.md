@@ -20,3 +20,37 @@ Whenever you work on UI, components, styling, animations, or UX flows, you **MUS
 
 **Rule:** Do not create UI from scratch. Inspect the repositories, adapt existing verified components, and integrate them smoothly.
 
+---
+
+## Ref.tools Principles: Anti-Slop AI Design Protocol (Matt Dailey)
+Whenever designing or modifying UI with AI, adhere strictly to these 7 principles:
+
+1. **Always Consider the Whole (No Whack-a-Mole Design)**
+   - Lay out all constraints first (tokens, workflows, states).
+   - Never apply isolated spot-fixes that randomly prioritize some elements and break overall cohesion.
+   - Keep a cohesive mental model: changes must respect the entire layout system.
+
+2. **Remove Stuff (De-Slop / Eliminate Agent Litter)**
+   - AI agents instinctively over-decorate: adding extra copy, decorative badges, redundant lines, duplicate labels, and unneeded wrappers.
+   - For **every single element**, ask: *"Do I actually need that?"*
+   - Strip out visual clutter, tighten copy, and retain only purposeful, high-signal UI.
+
+3. **Combat Prototype Gravity**
+   - Do not settle for the first draft simply because it is already in the codebase.
+   - Test alternative variants and push past the initial scaffolding.
+
+4. **Component Isolation & Showcase**
+   - Keep a clean separation between view components and business logic.
+   - Maintain a showcase / styleguide view to test components in isolation.
+
+5. **Test with Real Data & Live Deploys**
+   - Always evaluate designs against real database content, realistic text lengths, and live browser rendering.
+
+6. **Steal Proven Solutions (Curate, Don't Reinvent)**
+   - High-quality UX patterns have already been solved by top-tier products.
+   - Combine best-of-class patterns from Cal.com, Linear, and shadcn.
+
+7. **Taste Refinement (The Agricultural Threshing Approach)**
+   - Critique every detail relentlessly: test focus states, hit areas, optical alignment, and typography until the experience feels effortless, crisp, and confident.
+
+

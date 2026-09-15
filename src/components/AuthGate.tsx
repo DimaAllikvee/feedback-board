@@ -165,22 +165,11 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
           <HometownLogo size={24} />
         </div>
 
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-            Hometown Community
-          </span>
-          <span className="w-1 h-1 rounded-full bg-zinc-600" />
-          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 bg-emerald-950/60 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Active Board
-          </span>
-        </div>
-
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100">
-          Sign In to Access Board
+          Sign in to Hometown
         </h1>
-        <p className="text-xs sm:text-sm text-zinc-400 mt-2 leading-relaxed">
-          Authenticate to explore feature milestones, cast priority votes with supporter weights, and participate in technical debates.
+        <p className="text-xs sm:text-sm text-zinc-400 mt-2 leading-relaxed max-w-sm mx-auto">
+          Explore product milestones, cast priority votes, and collaborate on new features.
         </p>
       </motion.div>
 
