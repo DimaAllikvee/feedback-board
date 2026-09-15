@@ -39,13 +39,13 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
       {...props}
     >
       <div
-        className="pointer-events-none absolute -inset-px transition-opacity duration-300"
+        className="pointer-events-none absolute -inset-px transition-opacity duration-300 z-0"
         style={{
           opacity,
           background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
         }}
       />
-      <div className="relative z-10">{children}</div>
+      {children}
     </div>
   );
 };

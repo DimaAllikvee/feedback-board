@@ -119,7 +119,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       key={post.id}
                       spotlightColor="rgba(255, 255, 255, 0.03)"
                       onClick={() => onSelectPost(post)}
-                      className={`group cursor-pointer p-4 transition-all duration-150 hover:-translate-y-0.5 border-zinc-800/80 hover:border-zinc-700 ${
+                      className={`group cursor-pointer p-4 flex flex-col transition-all duration-150 hover:-translate-y-0.5 border-zinc-800/80 hover:border-zinc-700 ${
                         post.is_pinned ? 'border-zinc-700 bg-zinc-900/50' : 'bg-zinc-900/30'
                       }`}
                     >

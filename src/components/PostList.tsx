@@ -143,7 +143,7 @@ export const PostList: React.FC<PostListProps> = ({
             >
 
               {/* Upvote column on left */}
-              <div className="flex-shrink-0 pt-0.5">
+              <div className="relative z-10 flex-shrink-0 pt-0.5">
                 <UpvoteButton
                   count={post.upvotes_count}
                   hasVoted={post.has_voted}
@@ -154,7 +154,7 @@ export const PostList: React.FC<PostListProps> = ({
               </div>
 
               {/* Post content in center */}
-              <div className="flex-1 min-w-0">
+              <div className="relative z-10 flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   {post.is_pinned && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-300 bg-zinc-800 px-2 py-0.5 rounded-md border border-zinc-700">
@@ -175,22 +175,28 @@ export const PostList: React.FC<PostListProps> = ({
                 </p>
 
                 {/* Author footer */}
-                <div className="flex items-center gap-3 text-xs text-zinc-400">
+                <div className="flex items-center gap-2.5 sm:gap-3 text-xs text-zinc-400">
                   <div className="flex items-center gap-1.5">
                     <UserAvatar name={post.author.name} size="xs" />
                     <span className="text-zinc-300 font-medium">{post.author.name}</span>
                     {post.author.is_pro && (
-                      <span className="text-[9px] font-medium text-zinc-300 bg-zinc-800 border border-zinc-700 px-1.5 py-0.2 rounded">Supporter</span>
+                      <span className="text-[9px] font-medium text-zinc-300 bg-zinc-800 border border-zinc-700 px-1.5 py-0.5 rounded">Supporter</span>
                     )}
                   </div>
 
-                  <span>•</span>
+                  <span className="text-zinc-600">•</span>
                   <span>{new Date(post.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+
+                  {/* Mobile-only comment counter in meta footer */}
+                  <div className="sm:hidden ml-auto flex items-center gap-1 text-zinc-400">
+                    <RuneMessageSquare size={12} />
+                    <span className="font-mono text-xs">{post.comments_count}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Comments counter pill */}
-              <div className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 group-hover:text-zinc-200 text-xs">
+              {/* Comments counter pill (Desktop/Tablet) */}
+              <div className="relative z-10 hidden sm:flex flex-shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 group-hover:text-zinc-200 group-hover:border-zinc-700 transition-colors text-xs self-center">
                 <RuneMessageSquare size={13} />
                 <span className="font-medium font-mono">{post.comments_count}</span>
               </div>
