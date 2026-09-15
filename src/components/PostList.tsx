@@ -3,7 +3,7 @@ import { FeedbackPost, SortOption } from '../types';
 import { UpvoteButton } from './UpvoteButton';
 import { StatusBadge, CategoryBadge } from './StatusBadge';
 import { SpotlightCard } from './ui/SpotlightCard';
-import { BorderBeam } from './ui/BorderBeam';
+import { UserAvatar } from './ui/UserAvatar';
 import { 
   RuneFilter, 
   RuneArrowUpDown, 
@@ -123,9 +123,10 @@ export const PostList: React.FC<PostListProps> = ({
             <SpotlightCard
               key={post.id}
               onClick={() => onSelectPost(post)}
-              className="group flex items-start gap-4 p-4 sm:p-5 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5 border-zinc-800 hover:border-indigo-500/40"
+              className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5 border-zinc-800 hover:border-zinc-700 ${
+                post.is_pinned ? 'border-indigo-500/40 bg-indigo-950/20' : ''
+              }`}
             >
-              {post.is_pinned && <BorderBeam size={180} duration={9} colorFrom="#6366f1" colorTo="#3b82f6" />}
 
               {/* Upvote column on left */}
               <div className="flex-shrink-0 pt-0.5">
@@ -162,11 +163,7 @@ export const PostList: React.FC<PostListProps> = ({
                 {/* Author footer */}
                 <div className="flex items-center gap-3 text-xs text-zinc-400">
                   <div className="flex items-center gap-1.5">
-                    <img
-                      src={post.author.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
-                      alt={post.author.name}
-                      className="w-4 h-4 rounded-full object-cover"
-                    />
+                    <UserAvatar name={post.author.name} size="xs" />
                     <span className="text-zinc-300 font-medium">{post.author.name}</span>
                     {post.author.is_pro && (
                       <span className="text-[9px] font-extrabold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-1 py-0.5 rounded">PRO</span>

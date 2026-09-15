@@ -9,9 +9,7 @@ import {
 } from './types';
 import { 
   pb, 
-  INITIAL_POSTS, 
-  INITIAL_COMMENTS, 
-  DEMO_USERS 
+  INITIAL_POSTS 
 } from './lib/pocketbase';
 import { Navbar } from './components/Navbar';
 import { KanbanBoard } from './components/KanbanBoard';
@@ -30,10 +28,23 @@ import {
 } from './components/icons/RuneIcons';
 
 export const App: React.FC = () => {
-  // State
-  const [currentUser, setCurrentUser] = useState<User>(DEMO_USERS.admin);
-  const [posts, setPosts] = useState<FeedbackPost[]>(INITIAL_POSTS);
-  const [comments, setComments] = useState<Comment[]>(INITIAL_COMMENTS);
+  // Start unauthenticated (User is NOT logged in by default)
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    if (pb.authStore.isValid && pb.authStore.record) {
+      const rec = pb.authStore.record;
+      return {
+        id: rec.id,
+        name: rec.name || rec.email?.split('@')[0] || 'Member',
+        email: rec.email,
+        role: rec.role || 'user',
+        is_pro: Boolean(rec.is_pro),
+      };
+    }
+    return null;
+  });
+
+  const [posts, setPosts] = useState<FeedbackPost[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [activeTab, setActiveTab] = useState<ActiveTab>('roadmap');
   const [searchQuery, setSearchQuery] = useState('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -62,6 +73,24 @@ export const App: React.FC = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  // Sync PocketBase auth state
+  useEffect(() => {
+    const unsubscribe = pb.authStore.onChange((token, record) => {
+      if (token && record) {
+        setCurrentUser({
+          id: record.id,
+          name: record.name || record.email?.split('@')[0] || 'Member',
+          email: record.email,
+          role: record.role || 'user',
+          is_pro: Boolean(record.is_pro),
+        });
+      } else {
+        setCurrentUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Keyboard Shortcuts (Design System Checklist & Cal.com patterns)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,7 +107,12 @@ export const App: React.FC = () => {
       // 'N' for New Proposal
       if (e.key.toLowerCase() === 'n' && !isInputFocused && !selectedPost && !isNewPostOpen && !isStripeModalOpen && !isAuthModalOpen) {
         e.preventDefault();
-        setIsNewPostOpen(true);
+        if (!currentUser) {
+          addToast('Sign In Required', 'Please sign in to submit a proposal.', 'info');
+          setIsAuthModalOpen(true);
+        } else {
+          setIsNewPostOpen(true);
+        }
         return;
       }
 
@@ -93,9 +127,9 @@ export const App: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPost, isNewPostOpen, isStripeModalOpen, isAuthModalOpen]);
+  }, [currentUser, selectedPost, isNewPostOpen, isStripeModalOpen, isAuthModalOpen]);
 
-  // Attempt PocketBase fetch on load with graceful offline fallback
+  // Load live data from PocketBase (fallback to initial posts if PB empty or offline)
   useEffect(() => {
     async function loadDataFromPocketBase() {
       try {
@@ -126,9 +160,11 @@ export const App: React.FC = () => {
           }));
           setPosts(mapped);
           addToast('Connected to PocketBase', 'Synced live community records', 'success');
+        } else {
+          setPosts(INITIAL_POSTS);
         }
       } catch {
-        // Safe fallback
+        setPosts(INITIAL_POSTS);
       }
     }
     loadDataFromPocketBase();
@@ -145,7 +181,7 @@ export const App: React.FC = () => {
     if (!matchesSearch) return false;
 
     if (activeTab === 'my-posts') {
-      return p.author.id === currentUser.id;
+      return currentUser ? p.author.id === currentUser.id : false;
     }
     if (activeTab === 'my-votes') {
       return Boolean(p.has_voted);
@@ -155,6 +191,12 @@ export const App: React.FC = () => {
 
   // Upvote Action (Calculates weights: PRO users get 3x voting weight!)
   const handleVote = (postId: string) => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to upvote feature proposals.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
         if (post.id === postId) {
@@ -193,6 +235,12 @@ export const App: React.FC = () => {
 
   // Submit New Proposal
   const handleCreatePost = (data: { title: string; description: string; category: PostCategory }) => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to submit a proposal.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     const newPost: FeedbackPost = {
       id: `post-${Date.now()}`,
       title: data.title,
@@ -202,7 +250,6 @@ export const App: React.FC = () => {
       author: {
         id: currentUser.id,
         name: currentUser.name,
-        avatar: currentUser.avatar,
         is_pro: currentUser.is_pro,
         role: currentUser.role,
       },
@@ -220,13 +267,18 @@ export const App: React.FC = () => {
 
   // Add Comment
   const handleAddComment = (postId: string, content: string) => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to add comments.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     const newComment: Comment = {
       id: `comment-${Date.now()}`,
       post_id: postId,
       author: {
         id: currentUser.id,
         name: currentUser.name,
-        avatar: currentUser.avatar,
         is_pro: currentUser.is_pro,
         role: currentUser.role,
       },
@@ -280,7 +332,7 @@ export const App: React.FC = () => {
           }
           addToast(
             updated.is_pinned ? 'Feature Pinned' : 'Feature Unpinned',
-            updated.is_pinned ? 'Pinned to top of list with border beam highlight' : 'Returned to standard sorting',
+            updated.is_pinned ? 'Pinned to top of list' : 'Returned to standard sorting',
             'admin'
           );
           return updated;
@@ -313,20 +365,34 @@ export const App: React.FC = () => {
     addToast('Comment Removed', 'Moderation action completed.', 'admin');
   };
 
-  // Switch demo user
-  const handleSwitchUser = (userType: 'admin' | 'pro_user' | 'regular_user') => {
-    const newUser = DEMO_USERS[userType];
-    setCurrentUser(newUser);
-    addToast(
-      'Account Switched',
-      `Active session: ${newUser.name} (${newUser.role.toUpperCase()})`,
-      newUser.role === 'admin' ? 'admin' : 'info'
-    );
+  // Log Out Handler
+  const handleLogout = () => {
+    pb.authStore.clear();
+    setCurrentUser(null);
+    addToast('Signed Out', 'You have been logged out of your session.', 'info');
+  };
+
+  const handleOpenNewPost = () => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to submit a proposal.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsNewPostOpen(true);
+  };
+
+  const handleOpenStripeModal = () => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in before subscribing to PRO.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsStripeModalOpen(true);
   };
 
   // PRO Upgrade handler
   const handleUpgradeSuccess = (_transactionId: string) => {
-    setCurrentUser((prev) => ({ ...prev, is_pro: true }));
+    setCurrentUser((prev) => (prev ? { ...prev, is_pro: true } : prev));
     addToast('PRO Membership Active!', 'Enjoy 3x upvote weight and supporter badge perks.', 'success');
   };
 
@@ -342,28 +408,25 @@ export const App: React.FC = () => {
       {/* Top Navigation */}
       <Navbar
         currentUser={currentUser}
-        onSwitchUser={handleSwitchUser}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onOpenNewPost={() => setIsNewPostOpen(true)}
-        onOpenStripeModal={() => setIsStripeModalOpen(true)}
+        onOpenNewPost={handleOpenNewPost}
+        onOpenStripeModal={handleOpenStripeModal}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
-        onLogout={() => setCurrentUser(DEMO_USERS.regular_user)}
+        onLogout={handleLogout}
         searchInputRef={searchInputRef}
       />
 
-      {/* Hero Banner with Live Metrics & Architecture Summary */}
-      <section className="relative overflow-hidden border-b border-zinc-800/60 bg-gradient-to-b from-zinc-950 via-[#0b0d14] to-[#090a0f] py-8 sm:py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))] pointer-events-none" />
-        
+      {/* Hero Banner with Live Metrics (Solid background without gradients) */}
+      <section className="relative border-b border-zinc-800/80 bg-zinc-950 py-8 sm:py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-zinc-900 text-zinc-300 border border-zinc-800 mb-3">
                 <RuneSparkles size={13} className="text-indigo-400" />
-                <span>Customer Feedback & Transparent Roadmap Portal</span>
+                <span>Product Feedback & Roadmap Portal</span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
                 Shape our Product Roadmap together
@@ -420,14 +483,14 @@ export const App: React.FC = () => {
             posts={filteredPosts}
             onVote={handleVote}
             onSelectPost={setSelectedPost}
-            isPro={currentUser.is_pro}
+            isPro={Boolean(currentUser?.is_pro)}
           />
         ) : (
           <PostList
             posts={filteredPosts}
             onVote={handleVote}
             onSelectPost={setSelectedPost}
-            isPro={currentUser.is_pro}
+            isPro={Boolean(currentUser?.is_pro)}
           />
         )}
       </main>

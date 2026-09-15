@@ -53,7 +53,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           name: name || email.split('@')[0],
           role: 'user',
           is_pro: false,
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
         };
         onLoginSuccess(newUser);
         celebrate();
@@ -86,7 +85,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           name: email.split('@')[0],
           role: email.includes('admin') ? 'admin' : 'user',
           is_pro: email.includes('pro'),
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
         };
         onLoginSuccess(loggedUser);
         celebrate();
@@ -121,7 +119,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         email: 'dmitri@admin.io',
         role: 'admin',
         is_pro: true,
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
       });
     } else if (role === 'pro') {
       onLoginSuccess({
@@ -130,7 +127,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         email: 'alex@startup.io',
         role: 'user',
         is_pro: true,
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100',
       });
     } else {
       onLoginSuccess({
@@ -139,7 +135,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         email: 'guest@feedback.io',
         role: 'user',
         is_pro: false,
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
       });
     }
     celebrate();

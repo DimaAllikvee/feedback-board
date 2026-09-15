@@ -13,10 +13,11 @@ import {
 } from './icons/RuneIcons';
 import { DeleteButton } from './ui/DeleteButton';
 import { ReactionPill } from './ui/ReactionPill';
+import { UserAvatar } from './ui/UserAvatar';
 
 interface PostDetailModalProps {
   post: FeedbackPost;
-  currentUser: User;
+  currentUser: User | null;
   comments: Comment[];
   onClose: () => void;
   onVote: (postId: string) => void;
@@ -44,11 +45,11 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   const [statusSuccessMessage, setStatusSuccessMessage] = useState(false);
 
   const postComments = comments.filter((c) => c.post_id === post.id);
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = currentUser?.role === 'admin';
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
+    if (!commentText.trim() || !currentUser) return;
 
     setIsSubmittingComment(true);
     onAddComment(post.id, commentText.trim());
@@ -65,54 +66,50 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl bg-[#0d0f17] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in my-8"
+        className="relative w-full max-w-2xl bg-[#0d0f17] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors z-20"
         >
           <RuneX size={18} />
         </button>
 
-        {/* Top Badges */}
+        {/* Header tags */}
         <div className="flex flex-wrap items-center gap-2 mb-4 pr-10">
+          <CategoryBadge category={post.category} />
+          <StatusBadge status={post.status} size="md" />
           {post.is_pinned && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 bg-indigo-500/15 px-2.5 py-0.5 rounded-full border border-indigo-500/30">
-              <RunePin size={12} className="text-indigo-400" />
-              Pinned Feature Idea
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
+              <RunePin size={11} />
+              <span>Pinned</span>
             </span>
           )}
-          <StatusBadge status={post.status} size="md" />
-          <CategoryBadge category={post.category} />
         </div>
 
-        {/* Post Title & Vote */}
-        <div className="flex items-start gap-4 mb-4">
+        {/* Post Title & Upvote */}
+        <div className="flex items-start gap-4 mb-5">
           <UpvoteButton
             count={post.upvotes_count}
             hasVoted={post.has_voted}
             onVote={() => onVote(post.id)}
             orientation="vertical"
-            isPro={currentUser.is_pro}
+            isPro={Boolean(currentUser?.is_pro)}
           />
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-zinc-100 tracking-tight leading-snug">
               {post.title}
             </h2>
             <div className="flex items-center gap-2 mt-2 text-xs text-zinc-400">
-              <img
-                src={post.author.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
-                alt={post.author.name}
-                className="w-5 h-5 rounded-full object-cover"
-              />
+              <UserAvatar name={post.author.name} size="xs" />
               <span className="text-zinc-200 font-medium">{post.author.name}</span>
               {post.author.is_pro && (
                 <span className="text-[9px] font-extrabold text-amber-400 bg-amber-500/15 px-1 py-0.2 rounded border border-amber-500/30">PRO</span>
@@ -213,13 +210,14 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
 
           {/* New comment input */}
           <form onSubmit={handleCommentSubmit} className="mb-6">
-            <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 p-2 focus-within:border-indigo-500/50 transition-colors">
+            <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-800 p-2 focus-within:border-zinc-700 transition-colors">
               <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                placeholder={`Leave constructive feedback as ${currentUser.name}...`}
+                disabled={!currentUser}
+                placeholder={currentUser ? `Leave constructive feedback as ${currentUser.name}...` : 'Please sign in to join the discussion...'}
                 rows={2}
-                className="w-full bg-transparent text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 p-2 focus:outline-none resize-none"
+                className="w-full bg-transparent text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 p-2 focus:outline-none resize-none disabled:opacity-60"
               />
               <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 px-2">
                 <span className="text-[11px] text-zinc-500">
@@ -227,11 +225,11 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
                 </span>
                 <button
                   type="submit"
-                  disabled={!commentText.trim() || isSubmittingComment}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-600/25"
+                  disabled={!commentText.trim() || isSubmittingComment || !currentUser}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
                   <RuneSend size={13} />
-                  <span>Send</span>
+                  <span>Reply</span>
                 </button>
               </div>
             </div>
@@ -251,11 +249,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <img
-                        src={comment.author.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
-                        alt={comment.author.name}
-                        className="w-4 h-4 rounded-full object-cover"
-                      />
+                      <UserAvatar name={comment.author.name} size="xs" />
                       <span className="font-semibold text-zinc-200">{comment.author.name}</span>
                       {comment.author.role === 'admin' && (
                         <span className="text-[9px] font-bold text-rose-400 bg-rose-500/15 border border-rose-500/30 px-1.5 py-0.2 rounded">

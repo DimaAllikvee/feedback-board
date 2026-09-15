@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types';
 import { PRO_PLAN, simulateStripeCheckout } from '../lib/stripe';
-import { BorderBeam } from './ui/BorderBeam';
 import { 
   RuneCrown, 
   RuneX, 
@@ -11,7 +10,7 @@ import {
 import confetti from 'canvas-confetti';
 
 interface StripeProModalProps {
-  currentUser: User;
+  currentUser: User | null;
   onClose: () => void;
   onUpgradeSuccess: (transactionId: string) => void;
 }
@@ -22,12 +21,12 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
   onUpgradeSuccess,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(currentUser.is_pro);
+  const [isSuccess, setIsSuccess] = useState(Boolean(currentUser?.is_pro));
 
   const handleCheckout = async () => {
     setIsLoading(true);
     try {
-      const result = await simulateStripeCheckout(currentUser.id, PRO_PLAN.id);
+      const result = await simulateStripeCheckout(currentUser?.id || 'guest', PRO_PLAN.id);
       if (result.success) {
         setIsSuccess(true);
         onUpgradeSuccess(result.transactionId);
@@ -61,7 +60,6 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
         className="relative w-full max-w-lg bg-[#0d0f17] border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        <BorderBeam size={220} duration={7} colorFrom="#f59e0b" colorTo="#a855f7" />
 
         {/* Close Button */}
         <button
@@ -137,7 +135,7 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
               type="button"
               onClick={handleCheckout}
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl text-xs font-bold text-zinc-950 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-98 transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl text-xs font-bold text-zinc-950 bg-amber-400 hover:bg-amber-300 active:scale-98 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
             >
               {isLoading ? (
                 <>

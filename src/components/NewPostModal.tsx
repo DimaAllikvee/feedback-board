@@ -10,7 +10,7 @@ import {
 import confetti from 'canvas-confetti';
 
 interface NewPostModalProps {
-  currentUser: User;
+  currentUser: User | null;
   onClose: () => void;
   onSubmit: (data: { title: string; description: string; category: PostCategory }) => void;
 }
@@ -98,7 +98,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               Suggest a Feature or Improvement
             </h2>
             <p className="text-xs text-zinc-400">
-              Submitting as: <strong className="text-zinc-200">{currentUser.name}</strong>
+              Submitting as: <strong className="text-zinc-200">{currentUser?.name || 'Community Member'}</strong>
             </p>
           </div>
         </div>
@@ -219,7 +219,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 active:scale-95 transition-all shadow-md shadow-indigo-600/25"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all shadow-sm cursor-pointer"
               >
                 <RuneSparkles size={14} />
                 <span>Publish Proposal</span>

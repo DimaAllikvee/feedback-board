@@ -3,8 +3,8 @@ import { FeedbackPost, PostStatus } from '../types';
 import { UpvoteButton } from './UpvoteButton';
 import { CategoryBadge } from './StatusBadge';
 import { SpotlightCard } from './ui/SpotlightCard';
-import { BorderBeam } from './ui/BorderBeam';
 import { RoadmapProgressBar } from './ui/RoadmapProgressBar';
+import { UserAvatar } from './ui/UserAvatar';
 import { 
   RuneClock, 
   RuneCompass, 
@@ -129,11 +129,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       key={post.id}
                       spotlightColor={column.spotlightColor}
                       onClick={() => onSelectPost(post)}
-                      className="group cursor-pointer p-4 transition-all duration-200 hover:-translate-y-0.5 border-zinc-800/80 hover:border-indigo-500/40"
+                      className={`group cursor-pointer p-4 transition-all duration-200 hover:-translate-y-0.5 border-zinc-800/80 hover:border-zinc-700 ${
+                        post.is_pinned ? 'border-indigo-500/40 bg-indigo-950/20' : ''
+                      }`}
                     >
-                      {/* Featured Border Beam for pinned items */}
-                      {post.is_pinned && <BorderBeam size={150} duration={8} colorFrom="#6366f1" colorTo="#a855f7" />}
-
                       {/* Pinned badge */}
                       {post.is_pinned && (
                         <div className="flex items-center gap-1 text-[10px] font-bold text-indigo-400 mb-2">
@@ -164,11 +163,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {/* Footer */}
                       <div className="flex items-center justify-between pt-2.5 border-t border-zinc-800/60 text-[11px] text-zinc-400">
                         <div className="flex items-center gap-1.5">
-                          <img
-                            src={post.author.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'}
-                            alt={post.author.name}
-                            className="w-4 h-4 rounded-full object-cover"
-                          />
+                          <UserAvatar name={post.author.name} size="xs" />
                           <span className="truncate max-w-[95px] font-medium text-zinc-300">{post.author.name}</span>
                           {post.author.is_pro && (
                             <span className="text-[9px] font-extrabold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-1 rounded">PRO</span>

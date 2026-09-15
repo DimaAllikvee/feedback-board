@@ -1,5 +1,5 @@
 import PocketBase from 'pocketbase';
-import { FeedbackPost, Comment, User } from '../types';
+import { FeedbackPost, Comment } from '../types';
 
 // Environment variable for PocketBase URL (Project Week requirement)
 const POCKETBASE_URL = 
@@ -19,7 +19,6 @@ export const INITIAL_POSTS: FeedbackPost[] = [
     author: {
       id: 'u-1',
       name: 'Alex Vance',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
       is_pro: true,
       role: 'user'
     },
@@ -38,7 +37,6 @@ export const INITIAL_POSTS: FeedbackPost[] = [
     author: {
       id: 'u-2',
       name: 'Elena Rostova',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
       is_pro: false,
       role: 'user'
     },
@@ -57,7 +55,6 @@ export const INITIAL_POSTS: FeedbackPost[] = [
     author: {
       id: 'u-3',
       name: 'Marcus Brody',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
       is_pro: true,
       role: 'user'
     },
@@ -75,10 +72,9 @@ export const INITIAL_POSTS: FeedbackPost[] = [
     status: 'under_review',
     author: {
       id: 'u-4',
-      name: 'Dmitri Allikvee',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
-      is_pro: true,
-      role: 'admin'
+      name: 'Elena Vance',
+      is_pro: false,
+      role: 'user'
     },
     upvotes_count: 24,
     comments_count: 3,
@@ -95,7 +91,6 @@ export const INITIAL_POSTS: FeedbackPost[] = [
     author: {
       id: 'u-5',
       name: 'Sarah Connor',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop&q=80',
       is_pro: false,
       role: 'user'
     },
@@ -114,7 +109,6 @@ export const INITIAL_POSTS: FeedbackPost[] = [
     author: {
       id: 'u-6',
       name: 'Simon Cruz',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
       is_pro: false,
       role: 'user'
     },
@@ -131,9 +125,8 @@ export const INITIAL_COMMENTS: Comment[] = [
     id: 'c-1',
     post_id: 'pb-post-1',
     author: {
-      id: 'u-4',
-      name: 'Dmitri Allikvee (Admin)',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+      id: 'u-admin',
+      name: 'Support Team',
       is_pro: true,
       role: 'admin'
     },
@@ -146,7 +139,6 @@ export const INITIAL_COMMENTS: Comment[] = [
     author: {
       id: 'u-2',
       name: 'Elena Rostova',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
       is_pro: false,
       role: 'user'
     },
@@ -159,38 +151,11 @@ export const INITIAL_COMMENTS: Comment[] = [
     author: {
       id: 'u-1',
       name: 'Alex Vance',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
       is_pro: true,
       role: 'user'
     },
-    content: 'The current dark mode already looks phenomenal with the subtle glassmorphic panels.',
+    content: 'The current dark mode looks great with clean minimalist panels.',
     created: '2026-09-11T11:05:00Z'
   }
 ];
 
-export const DEMO_USERS: Record<string, User> = {
-  admin: {
-    id: 'user-admin',
-    name: 'Dmitri Allikvee',
-    email: 'dmitri@admin.io',
-    role: 'admin',
-    is_pro: true,
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'
-  },
-  pro_user: {
-    id: 'user-pro',
-    name: 'Alex Vance',
-    email: 'alex@startup.io',
-    role: 'user',
-    is_pro: true,
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
-  },
-  regular_user: {
-    id: 'user-guest',
-    name: 'Guest Contributor',
-    email: 'guest@feedback.io',
-    role: 'user',
-    is_pro: false,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80'
-  }
-};
