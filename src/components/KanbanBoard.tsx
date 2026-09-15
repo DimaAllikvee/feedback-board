@@ -4,6 +4,7 @@ import { UpvoteButton } from './UpvoteButton';
 import { CategoryBadge } from './StatusBadge';
 import { SpotlightCard } from './ui/SpotlightCard';
 import { BorderBeam } from './ui/BorderBeam';
+import { RoadmapProgressBar } from './ui/RoadmapProgressBar';
 import { 
   RuneClock, 
   RuneCompass, 
@@ -81,8 +82,12 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   isPro = false
 }) => {
   return (
-    <div className="w-full overflow-x-auto pb-6 pt-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 min-w-[320px] lg:min-w-[1040px]">
+    <div className="w-full pb-6 pt-1">
+      {/* Velocity Progress Bar (ReUI / Coss pattern) */}
+      <RoadmapProgressBar posts={posts} />
+
+      <div className="w-full overflow-x-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 min-w-[320px] lg:min-w-[1040px]">
         {COLUMNS.map((column) => {
           const colPosts = posts
             .filter((p) => p.status === column.id)
@@ -182,6 +187,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );

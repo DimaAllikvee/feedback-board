@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FeedbackPost, 
   Comment, 
@@ -20,6 +20,7 @@ import { PostDetailModal } from './components/PostDetailModal';
 import { NewPostModal } from './components/NewPostModal';
 import { StripeProModal } from './components/StripeProModal';
 import { AuthModal } from './components/AuthModal';
+import { ToastStack, ToastMessage } from './components/ui/Toast';
 import { 
   RuneSparkles, 
   RuneCrown, 
@@ -35,12 +36,64 @@ export const App: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>(INITIAL_COMMENTS);
   const [activeTab, setActiveTab] = useState<ActiveTab>('roadmap');
   const [searchQuery, setSearchQuery] = useState('');
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
   
   // Modals
   const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
   const [isStripeModalOpen, setIsStripeModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Search input ref for keyboard shortcut (⌘K / /)
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Toast Helper
+  const addToast = (title: string, description?: string, type: 'success' | 'info' | 'admin' = 'info') => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const newToast: ToastMessage = { id, title, description, type };
+    setToasts((prev) => [...prev, newToast]);
+
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3500);
+  };
+
+  const handleDismissToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  // Keyboard Shortcuts (Design System Checklist & Cal.com patterns)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeTag = document.activeElement?.tagName.toLowerCase();
+      const isInputFocused = activeTag === 'input' || activeTag === 'textarea';
+
+      // ⌘K or / to search
+      if ((e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) && !isInputFocused) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+
+      // 'N' for New Proposal
+      if (e.key.toLowerCase() === 'n' && !isInputFocused && !selectedPost && !isNewPostOpen && !isStripeModalOpen && !isAuthModalOpen) {
+        e.preventDefault();
+        setIsNewPostOpen(true);
+        return;
+      }
+
+      // Escape to close active modal
+      if (e.key === 'Escape') {
+        setSelectedPost(null);
+        setIsNewPostOpen(false);
+        setIsStripeModalOpen(false);
+        setIsAuthModalOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPost, isNewPostOpen, isStripeModalOpen, isAuthModalOpen]);
 
   // Attempt PocketBase fetch on load with graceful offline fallback
   useEffect(() => {
@@ -72,9 +125,10 @@ export const App: React.FC = () => {
             updated: r.updated,
           }));
           setPosts(mapped);
+          addToast('Connected to PocketBase', 'Synced live community records', 'success');
         }
       } catch {
-        // PocketBase offline or not yet initialized, smoothly using verified seed data
+        // Safe fallback
       }
     }
     loadDataFromPocketBase();
@@ -119,6 +173,17 @@ export const App: React.FC = () => {
           if (selectedPost && selectedPost.id === postId) {
             setSelectedPost(updated);
           }
+
+          if (!alreadyVoted) {
+            addToast(
+              'Vote Registered',
+              currentUser.is_pro ? '+3 PRO Priority Votes added!' : '+1 vote recorded.',
+              'success'
+            );
+          } else {
+            addToast('Vote Removed', 'Your upvote has been revoked.', 'info');
+          }
+
           return updated;
         }
         return post;
@@ -150,6 +215,7 @@ export const App: React.FC = () => {
     };
 
     setPosts([newPost, ...posts]);
+    addToast('Idea Published', 'Your feature proposal is now live on the board.', 'success');
   };
 
   // Add Comment
@@ -182,6 +248,8 @@ export const App: React.FC = () => {
         return p;
       })
     );
+
+    addToast('Comment Posted', 'Your reply was added to the discussion.', 'info');
   };
 
   // Admin status update
@@ -198,6 +266,7 @@ export const App: React.FC = () => {
         return p;
       })
     );
+    addToast('Status Changed', `Roadmap milestone moved to ${newStatus.replace('_', ' ')}`, 'admin');
   };
 
   // Admin pin toggle
@@ -209,6 +278,11 @@ export const App: React.FC = () => {
           if (selectedPost && selectedPost.id === postId) {
             setSelectedPost(updated);
           }
+          addToast(
+            updated.is_pinned ? 'Feature Pinned' : 'Feature Unpinned',
+            updated.is_pinned ? 'Pinned to top of list with border beam highlight' : 'Returned to standard sorting',
+            'admin'
+          );
           return updated;
         }
         return p;
@@ -221,6 +295,7 @@ export const App: React.FC = () => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
     setComments((prev) => prev.filter((c) => c.post_id !== postId));
     setSelectedPost(null);
+    addToast('Proposal Deleted', 'Feature card removed from database.', 'admin');
   };
 
   // Admin delete comment
@@ -235,16 +310,24 @@ export const App: React.FC = () => {
         )
       );
     }
+    addToast('Comment Removed', 'Moderation action completed.', 'admin');
   };
 
   // Switch demo user
   const handleSwitchUser = (userType: 'admin' | 'pro_user' | 'regular_user') => {
-    setCurrentUser(DEMO_USERS[userType]);
+    const newUser = DEMO_USERS[userType];
+    setCurrentUser(newUser);
+    addToast(
+      'Account Switched',
+      `Active session: ${newUser.name} (${newUser.role.toUpperCase()})`,
+      newUser.role === 'admin' ? 'admin' : 'info'
+    );
   };
 
   // PRO Upgrade handler
   const handleUpgradeSuccess = (_transactionId: string) => {
     setCurrentUser((prev) => ({ ...prev, is_pro: true }));
+    addToast('PRO Membership Active!', 'Enjoy 3x upvote weight and supporter badge perks.', 'success');
   };
 
   // Roadmap Metrics
@@ -268,6 +351,7 @@ export const App: React.FC = () => {
         onOpenStripeModal={() => setIsStripeModalOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={() => setCurrentUser(DEMO_USERS.regular_user)}
+        searchInputRef={searchInputRef}
       />
 
       {/* Hero Banner with Live Metrics & Architecture Summary */}
@@ -366,6 +450,9 @@ export const App: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Toast Notification Stack */}
+      <ToastStack toasts={toasts} onDismiss={handleDismissToast} />
 
       {/* Post Details Modal */}
       {selectedPost && (

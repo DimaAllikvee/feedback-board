@@ -13,6 +13,7 @@ import {
   RuneChevronDown,
   RuneX
 } from './icons/RuneIcons';
+import { Kbd } from './ui/Kbd';
 import { User, ActiveTab } from '../types';
 
 interface NavbarProps {
@@ -26,6 +27,7 @@ interface NavbarProps {
   onOpenStripeModal: () => void;
   onOpenAuthModal: () => void;
   onLogout: () => void;
+  searchInputRef?: React.RefObject<HTMLInputElement>;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -38,6 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenNewPost,
   onOpenStripeModal,
   onOpenAuthModal,
+  searchInputRef,
 }) => {
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
 
@@ -70,25 +73,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Quick Search */}
+          {/* Quick Search with coss.com/ui Kbd indicator */}
           <div className="flex-1 max-w-md hidden md:block">
-            <div className="relative">
-              <RuneSearch size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <div className="relative flex items-center">
+              <RuneSearch size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="Search feedback, ideas, or roadmap items..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full bg-zinc-900/90 text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-8 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                className="w-full bg-zinc-900/90 text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/60 transition-all"
               />
-              {searchQuery && (
-                <button
-                  onClick={() => onSearchChange('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-200 p-1"
-                >
-                  <RuneX size={14} />
-                </button>
-              )}
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery ? (
+                  <button
+                    onClick={() => onSearchChange('')}
+                    aria-label="Clear search"
+                    className="text-xs text-zinc-400 hover:text-zinc-200 p-1"
+                  >
+                    <RuneX size={14} />
+                  </button>
+                ) : (
+                  <Kbd className="hidden lg:inline-flex">⌘K</Kbd>
+                )}
+              </div>
             </div>
           </div>
 

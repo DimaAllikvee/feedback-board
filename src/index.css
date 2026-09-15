@@ -25,6 +25,12 @@
     --ring: 243 75% 59%;
     --radius: 0.75rem;
   }
+
+  /* Accessible focus ring for all interactive elements (Design System Checklist) */
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #090a0f, 0 0 0 4px #6366f1;
+  }
 }
 
 /* Custom modern scrollbars */
