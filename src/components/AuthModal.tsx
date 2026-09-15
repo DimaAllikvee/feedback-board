@@ -3,9 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { pb } from '../lib/pocketbase';
 import { User, UserRole } from '../types';
 import { 
-  RuneUser, 
-  RuneShield, 
-  RuneCrown, 
   RuneX, 
   RuneCheck,
   RuneAlertTriangle
@@ -124,61 +121,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Authentication error';
       setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (role: 'admin' | 'supporter' | 'guest') => {
-    setError(null);
-    setLoading(true);
-
-    let targetEmail = 'member@hometown.io';
-    let targetPass = 'Password1234!';
-
-    if (role === 'admin') {
-      targetEmail = 'dmitri@admin.io';
-      targetPass = 'Password1234!';
-    } else if (role === 'supporter') {
-      targetEmail = 'supporter@hometown.io';
-      targetPass = 'Password1234!';
-    }
-
-    try {
-      let authRecord: any = null;
-      try {
-        const authData = await pb.collection('users').authWithPassword(targetEmail, targetPass);
-        authRecord = authData?.record;
-      } catch {
-        if (role === 'admin') {
-          const superAuth = await pb.collection('_superusers').authWithPassword(targetEmail, targetPass);
-          if (superAuth?.record) {
-            authRecord = {
-              id: superAuth.record.id,
-              email: superAuth.record.email,
-              name: 'Dmitri Allikvee (Admin)',
-              role: 'admin',
-              is_pro: true,
-            };
-          }
-        }
-      }
-
-      if (authRecord) {
-        const user: User = {
-          id: authRecord.id,
-          email: authRecord.email,
-          name: authRecord.name || (role === 'admin' ? 'Dmitri Allikvee' : role === 'supporter' ? 'Elena Rostova' : 'Marcus Chen'),
-          role: (authRecord.role as UserRole) || (role === 'admin' ? 'admin' : 'user'),
-          is_pro: role === 'admin' || role === 'supporter' || Boolean(authRecord.is_pro),
-        };
-        onLoginSuccess(user);
-        onClose();
-      } else {
-        setError(`Failed to authenticate demo account ${targetEmail} against PocketBase.`);
-      }
-    } catch (err: any) {
-      setError(`Auth error: ${err.message || err}`);
     } finally {
       setLoading(false);
     }
@@ -349,56 +291,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             )}
           </button>
         </form>
-
-        {/* 1-Click Demo Accounts */}
-        <div className="border-t border-zinc-800/80 mt-5 pt-4">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 mb-2">
-            1-Click Demo Testing:
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin')}
-              className="flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-center cursor-pointer min-h-[82px]"
-            >
-              <div className="w-7 h-7 rounded-lg bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-rose-400 shrink-0">
-                <RuneShield size={14} className="shrink-0" />
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[11px] font-medium text-zinc-200">Admin</span>
-                <span className="text-[9px] text-rose-400 font-mono">Superuser</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('supporter')}
-              className="flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-center cursor-pointer min-h-[82px]"
-            >
-              <div className="w-7 h-7 rounded-lg bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-emerald-400 shrink-0">
-                <RuneCrown size={14} className="shrink-0 -translate-y-0.5" />
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[11px] font-medium text-zinc-200">Supporter</span>
-                <span className="text-[9px] text-emerald-400 font-mono">3x Votes</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('guest')}
-              className="flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 text-zinc-300 transition-all text-center cursor-pointer min-h-[82px]"
-            >
-              <div className="w-7 h-7 rounded-lg bg-zinc-800/90 border border-zinc-700/80 flex items-center justify-center text-zinc-400 shrink-0">
-                <RuneUser size={14} className="shrink-0" />
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[11px] font-medium text-zinc-200">Member</span>
-                <span className="text-[9px] text-zinc-500 font-mono">Standard</span>
-              </div>
-            </button>
-          </div>
-        </div>
 
       </motion.div>
     </motion.div>
