@@ -36,7 +36,7 @@
 ## 3. Live Service Links
 
 - **Frontend Application (Coolify):** Deployed on Coolify
-- **PocketBase API & Admin Dashboard:** [http://pocketbase-bzmqz78h0ehdz5mnq2t4eumx.176.112.158.15.sslip.io/_/](http://pocketbase-bzmqz78h0ehdz5mnq2t4eumx.176.112.158.15.sslip.io/_/)
+- **PocketBase Database & Admin Dashboard:** [http://pocketbase-yfgsu5yrrfnhs5lxpsjz0fsm.176.112.158.15.sslip.io/_/#/collections?collection=users](http://pocketbase-yfgsu5yrrfnhs5lxpsjz0fsm.176.112.158.15.sslip.io/_/#/collections?collection=users)
 - **GitHub Repository (Private):** [https://github.com/DimaAllikvee/feedback-board](https://github.com/DimaAllikvee/feedback-board)
 
 ---
