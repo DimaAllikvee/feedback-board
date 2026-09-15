@@ -71,62 +71,68 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Quick Search with coss.com/ui Kbd indicator */}
-          <div className="flex-1 max-w-md hidden md:block">
-            <div className="relative flex items-center">
-              <RuneSearch size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search proposals, topics, or milestones..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full bg-zinc-900/80 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-all"
-              />
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                {searchQuery ? (
-                  <button
-                    onClick={() => onSearchChange('')}
-                    aria-label="Clear search"
-                    className="text-xs text-zinc-400 hover:text-zinc-200 p-1 cursor-pointer"
-                  >
-                    <RuneX size={14} />
-                  </button>
-                ) : (
-                  <Kbd className="hidden lg:inline-flex">⌘K</Kbd>
-                )}
+          {/* Quick Search with coss.com/ui Kbd indicator (Only shown when authenticated) */}
+          {currentUser && (
+            <div className="flex-1 max-w-md hidden md:block">
+              <div className="relative flex items-center">
+                <RuneSearch size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search proposals, topics, or milestones..."
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="w-full bg-zinc-900/80 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-all"
+                />
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {searchQuery ? (
+                    <button
+                      onClick={() => onSearchChange('')}
+                      aria-label="Clear search"
+                      className="text-xs text-zinc-400 hover:text-zinc-200 p-1 cursor-pointer"
+                    >
+                      <RuneX size={14} />
+                    </button>
+                  ) : (
+                    <Kbd className="hidden lg:inline-flex">⌘K</Kbd>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Action CTAs & Auth */}
           <div className="flex items-center gap-2">
             
-            {/* Supporter Pass Button (formerly Stripe PRO) */}
-            <motion.button
-              whileTap={{ scale: 0.96 }}
-              type="button"
-              onClick={onOpenStripeModal}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-[background-color,border-color,color] duration-100 cursor-pointer select-none"
-              title="Supporter Membership (Stripe Billing)"
-            >
-              <RuneCrown size={14} className="text-zinc-400 shrink-0" />
-              <span className="hidden sm:inline">Supporter</span>
-              {currentUser?.is_pro && (
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              )}
-            </motion.button>
+            {currentUser && (
+              <>
+                {/* Supporter Pass Button (formerly Stripe PRO) */}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  type="button"
+                  onClick={onOpenStripeModal}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-[background-color,border-color,color] duration-100 cursor-pointer select-none"
+                  title="Supporter Membership (Stripe Billing)"
+                >
+                  <RuneCrown size={14} className="text-zinc-400 shrink-0" />
+                  <span className="hidden sm:inline">Supporter</span>
+                  {currentUser?.is_pro && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  )}
+                </motion.button>
 
-            {/* New Post Button (Clean neutral high-contrast with tactile press) */}
-            <motion.button
-              whileTap={{ scale: 0.96 }}
-              type="button"
-              onClick={onOpenNewPost}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white transition-[background-color,transform] duration-100 cursor-pointer shadow-sm select-none"
-            >
-              <RunePlus size={14} className="shrink-0" />
-              <span>New Idea</span>
-            </motion.button>
+                {/* New Post Button */}
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  type="button"
+                  onClick={onOpenNewPost}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white transition-[background-color,transform] duration-100 cursor-pointer shadow-sm select-none"
+                >
+                  <RunePlus size={14} className="shrink-0" />
+                  <span>New Idea</span>
+                </motion.button>
+              </>
+            )}
 
             {/* Auth Profile or Sign In Button */}
             {currentUser ? (
@@ -202,40 +208,42 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Navigation Tabs Bar with Emil Kowalski Snappy Spring Indicator */}
-        <div className="flex items-center space-x-1 sm:space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-zinc-800/40">
-          {[
-            { id: 'roadmap' as const, label: 'Roadmap', icon: RuneKanban },
-            { id: 'list' as const, label: 'All Posts', icon: RuneList },
-            { id: 'my-posts' as const, label: 'My Submissions', icon: RunePin },
-            { id: 'my-votes' as const, label: 'My Upvoted', icon: RuneChevronUp },
-          ].map((tab) => {
-            const isActive = activeTab === tab.id;
-            const Icon = tab.icon;
-            return (
-              <motion.button
-                key={tab.id}
-                whileTap={{ scale: 0.95 }}
-                type="button"
-                onClick={() => onTabChange(tab.id)}
-                className={cn(
-                  "relative inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-100 cursor-pointer select-none",
-                  isActive ? "text-zinc-100" : "text-zinc-400 hover:text-zinc-200"
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="activeNavTab"
-                    className="absolute inset-0 rounded-lg bg-zinc-800 border border-zinc-700 shadow-sm"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <Icon size={14} className={cn("relative z-10 shrink-0", isActive ? "text-zinc-200" : "text-zinc-500")} />
-                <span className="relative z-10">{tab.label}</span>
-              </motion.button>
-            );
-          })}
-        </div>
+        {/* Navigation Tabs Bar with Emil Kowalski Snappy Spring Indicator (Only shown when authenticated) */}
+        {currentUser && (
+          <div className="flex items-center space-x-1 sm:space-x-2 py-2 overflow-x-auto no-scrollbar border-t border-zinc-800/40">
+            {[
+              { id: 'roadmap' as const, label: 'Roadmap', icon: RuneKanban },
+              { id: 'list' as const, label: 'All Posts', icon: RuneList },
+              { id: 'my-posts' as const, label: 'My Submissions', icon: RunePin },
+              { id: 'my-votes' as const, label: 'My Upvoted', icon: RuneChevronUp },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              const Icon = tab.icon;
+              return (
+                <motion.button
+                  key={tab.id}
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => onTabChange(tab.id)}
+                  className={cn(
+                    "relative inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-100 cursor-pointer select-none",
+                    isActive ? "text-zinc-100" : "text-zinc-400 hover:text-zinc-200"
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavTab"
+                      className="absolute inset-0 rounded-lg bg-zinc-800 border border-zinc-700 shadow-sm"
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <Icon size={14} className={cn("relative z-10 shrink-0", isActive ? "text-zinc-200" : "text-zinc-500")} />
+                  <span className="relative z-10">{tab.label}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+        )}
 
       </div>
     </header>

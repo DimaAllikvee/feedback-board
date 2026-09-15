@@ -19,6 +19,7 @@ import { PostDetailModal } from './components/PostDetailModal';
 import { NewPostModal } from './components/NewPostModal';
 import { StripeProModal } from './components/StripeProModal';
 import { AuthModal } from './components/AuthModal';
+import { AuthGate } from './components/AuthGate';
 import { ToastStack, ToastMessage } from './components/ui/Toast';
 import { RuneCrown } from './components/icons/RuneIcons';
 
@@ -414,76 +415,106 @@ export const App: React.FC = () => {
         searchInputRef={searchInputRef}
       />
 
-      {/* Decluttered Minimalist Hero with Inline Status Strip */}
-      <section className="border-b border-zinc-800/80 bg-[#090a0f] py-7 sm:py-9">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="max-w-2xl">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100 leading-tight">
-                Product Roadmap & Feedback
-              </h1>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 leading-relaxed">
-                Propose features, cast priority votes with supporter weight, and track engineering progress from review to shipped.
-              </p>
-            </div>
-
-            {/* Streamlined inline status indicators */}
-            <div className="flex items-center flex-wrap gap-2 text-xs">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80" />
-                <span className="text-zinc-400">Review:</span>
-                <span className="font-mono font-medium text-zinc-200">{underReviewCount}</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/80" />
-                <span className="text-zinc-400">Planned:</span>
-                <span className="font-mono font-medium text-zinc-200">{plannedCount}</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400/80" />
-                <span className="text-zinc-400">In Progress:</span>
-                <span className="font-mono font-medium text-zinc-200">{inProgressCount}</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
-                <span className="text-zinc-400">Completed:</span>
-                <span className="font-mono font-medium text-zinc-200">{completedCount}</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
-        {/* Active Tab Views with Snappy Emil Kowalski Transitions */}
-        <AnimatePresence mode="wait">
+      {/* Dynamic Main Body: AuthGate for guests vs Full Roadmap/Board for logged in members */}
+      <AnimatePresence mode="wait">
+        {!currentUser ? (
           <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 3 }}
+            key="auth-gate-view"
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -3 }}
-            transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="flex-1 flex flex-col justify-center"
           >
-            {activeTab === 'roadmap' ? (
-              <KanbanBoard
-                posts={filteredPosts}
-                onVote={handleVote}
-                onSelectPost={setSelectedPost}
-                isPro={Boolean(currentUser?.is_pro)}
-              />
-            ) : (
-              <PostList
-                posts={filteredPosts}
-                onVote={handleVote}
-                onSelectPost={setSelectedPost}
-                isPro={Boolean(currentUser?.is_pro)}
-              />
-            )}
+            <AuthGate
+              onLoginSuccess={(user) => {
+                setCurrentUser(user);
+                addToast('Welcome back!', `Signed in as ${user.name}`, 'success');
+              }}
+            />
           </motion.div>
-        </AnimatePresence>
-      </main>
+        ) : (
+          <motion.div
+            key="board-view"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="flex-1 flex flex-col"
+          >
+            {/* Decluttered Minimalist Hero with Inline Status Strip */}
+            <section className="border-b border-zinc-800/80 bg-[#090a0f] py-7 sm:py-9">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+                  <div className="max-w-2xl">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100 leading-tight">
+                      Product Roadmap & Feedback
+                    </h1>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 leading-relaxed">
+                      Propose features, cast priority votes with supporter weight, and track engineering progress from review to shipped.
+                    </p>
+                  </div>
+
+                  {/* Streamlined inline status indicators */}
+                  <div className="flex items-center flex-wrap gap-2 text-xs">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+                      <span className="text-zinc-400">Review:</span>
+                      <span className="font-mono font-medium text-zinc-200">{underReviewCount}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400/80" />
+                      <span className="text-zinc-400">Planned:</span>
+                      <span className="font-mono font-medium text-zinc-200">{plannedCount}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400/80" />
+                      <span className="text-zinc-400">In Progress:</span>
+                      <span className="font-mono font-medium text-zinc-200">{inProgressCount}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
+                      <span className="text-zinc-400">Completed:</span>
+                      <span className="font-mono font-medium text-zinc-200">{completedCount}</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </section>
+
+            {/* Main Content Area */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+              {/* Active Tab Views with Snappy Emil Kowalski Transitions */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 3 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -3 }}
+                  transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {activeTab === 'roadmap' ? (
+                    <KanbanBoard
+                      posts={filteredPosts}
+                      onVote={handleVote}
+                      onSelectPost={setSelectedPost}
+                      isPro={Boolean(currentUser?.is_pro)}
+                    />
+                  ) : (
+                    <PostList
+                      posts={filteredPosts}
+                      onVote={handleVote}
+                      onSelectPost={setSelectedPost}
+                      isPro={Boolean(currentUser?.is_pro)}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </main>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Clean Minimalist Footer */}
       <footer className="border-t border-zinc-800/80 bg-zinc-950 py-6 text-xs text-zinc-500">
