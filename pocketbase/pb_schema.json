@@ -1,183 +1,564 @@
 [
   {
-    "id": "posts_collection_id",
+    "id": "_pb_users_auth_",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
+    "name": "users",
+    "type": "auth",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "help": "",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cost": 0,
+        "help": "",
+        "hidden": true,
+        "id": "password901924565",
+        "max": 0,
+        "min": 8,
+        "name": "password",
+        "pattern": "",
+        "presentable": false,
+        "required": true,
+        "system": true,
+        "type": "password"
+      },
+      {
+        "autogeneratePattern": "[a-zA-Z0-9]{50}",
+        "help": "",
+        "hidden": true,
+        "id": "text2504183744",
+        "max": 60,
+        "min": 30,
+        "name": "tokenKey",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "exceptDomains": [],
+        "help": "",
+        "hidden": false,
+        "id": "email3885137012",
+        "name": "email",
+        "onlyDomains": [],
+        "presentable": false,
+        "required": true,
+        "system": true,
+        "type": "email"
+      },
+      {
+        "help": "",
+        "hidden": false,
+        "id": "bool1547992806",
+        "name": "emailVisibility",
+        "presentable": false,
+        "required": false,
+        "system": true,
+        "type": "bool"
+      },
+      {
+        "help": "",
+        "hidden": false,
+        "id": "bool256245529",
+        "name": "verified",
+        "presentable": false,
+        "required": false,
+        "system": true,
+        "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "text1579384326",
+        "max": 255,
+        "min": 0,
+        "name": "name",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "help": "",
+        "hidden": false,
+        "id": "file376926767",
+        "maxSelect": 1,
+        "maxSize": 0,
+        "mimeTypes": [
+          "image/jpeg",
+          "image/png",
+          "image/svg+xml",
+          "image/gif",
+          "image/webp"
+        ],
+        "name": "avatar",
+        "presentable": false,
+        "protected": false,
+        "required": false,
+        "system": false,
+        "thumbs": [],
+        "type": "file"
+      },
+      {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "select3391823719",
+        "maxSelect": 1,
+        "name": "role",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "user",
+          "admin"
+        ]
+      },
+      {
+        "help": "",
+        "hidden": false,
+        "id": "bool2981726190",
+        "name": "is_pro",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
+      "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+    ],
+    "system": false,
+    "authRule": "",
+    "manageRule": null,
+    "oauth2": {
+      "mappedFields": {
+        "id": "",
+        "name": "name",
+        "username": "",
+        "avatarURL": "avatar"
+      },
+      "enabled": false
+    },
+    "passwordAuth": {
+      "enabled": true,
+      "identityFields": [
+        "email"
+      ]
+    },
+    "mfa": {
+      "enabled": false,
+      "duration": 600,
+      "rule": ""
+    },
+    "otp": {
+      "enabled": false,
+      "duration": 180,
+      "length": 8
+    },
+    "authToken": {
+      "duration": 432000
+    },
+    "passwordResetToken": {
+      "duration": 1800
+    },
+    "emailChangeToken": {
+      "duration": 1800
+    },
+    "verificationToken": {
+      "duration": 86400
+    },
+    "fileToken": {
+      "duration": 180
+    }
+  },
+  {
+    "id": "pbc_posts000001",
     "name": "posts",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "help": "",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "text3112048591",
+        "max": 150,
+        "min": 3,
         "name": "title",
-        "type": "text",
-        "required": true,
+        "pattern": "",
         "presentable": true,
-        "unique": false,
-        "options": { "min": 5, "max": 120, "pattern": "" }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
       },
       {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "text3112048592",
+        "max": 3000,
+        "min": 5,
         "name": "description",
-        "type": "text",
-        "required": true,
+        "pattern": "",
         "presentable": false,
-        "unique": false,
-        "options": { "min": 15, "max": 2000, "pattern": "" }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
       },
       {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "select3112048593",
+        "maxSelect": 1,
         "name": "category",
-        "type": "select",
-        "required": true,
         "presentable": false,
-        "unique": false,
-        "options": {
-          "maxSelect": 1,
-          "values": ["feature", "improvement", "bug", "integration", "ui-ux"]
-        }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": [
+          "feature",
+          "improvement",
+          "bug",
+          "integration",
+          "ui-ux"
+        ]
       },
       {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "select3112048594",
+        "maxSelect": 1,
         "name": "status",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
         "type": "select",
-        "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "maxSelect": 1,
-          "values": ["under_review", "planned", "in_progress", "completed", "closed"]
-        }
+        "values": [
+          "under_review",
+          "planned",
+          "in_progress",
+          "completed",
+          "closed"
+        ]
       },
       {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "help": "",
+        "hidden": false,
+        "id": "relation31120485",
+        "maxSelect": 1,
+        "minSelect": 1,
         "name": "author",
-        "type": "relation",
+        "presentable": false,
+        "primaryKey": false,
         "required": true,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "collectionId": "_pb_users_auth_",
-          "cascadeDelete": false,
-          "minSelect": 1,
-          "maxSelect": 1,
-          "displayFields": ["name", "email"]
-        }
+        "system": false,
+        "type": "relation"
       },
       {
+        "help": "",
+        "hidden": false,
+        "id": "number3112048596",
+        "max": null,
+        "min": 0,
         "name": "upvotes_count",
-        "type": "number",
-        "required": false,
+        "noDecimal": true,
         "presentable": false,
-        "unique": false,
-        "options": { "min": 0, "max": null, "noDecimal": true }
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "number"
       },
       {
+        "help": "",
+        "hidden": false,
+        "id": "number3112048597",
+        "max": null,
+        "min": 0,
         "name": "comments_count",
-        "type": "number",
-        "required": false,
+        "noDecimal": true,
         "presentable": false,
-        "unique": false,
-        "options": { "min": 0, "max": null, "noDecimal": true }
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "number"
       },
       {
+        "help": "",
+        "hidden": false,
+        "id": "bool3112048598",
         "name": "is_pinned",
-        "type": "bool",
-        "required": false,
         "presentable": false,
-        "unique": false,
-        "options": {}
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
       }
     ],
     "indexes": [
       "CREATE INDEX `idx_posts_status` ON `posts` (`status`)",
-      "CREATE INDEX `idx_posts_category` ON `posts` (`category`)",
-      "CREATE INDEX `idx_posts_upvotes` ON `posts` (`upvotes_count`)"
+      "CREATE INDEX `idx_posts_category` ON `posts` (`category`)"
     ],
     "listRule": "",
     "viewRule": "",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id = author.id || @request.auth.role = \"admin\"",
-    "deleteRule": "@request.auth.role = \"admin\""
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id = author.id || @request.auth.role = 'admin'",
+    "deleteRule": "@request.auth.role = 'admin'"
   },
   {
-    "id": "votes_collection_id",
+    "id": "pbc_votes000001",
     "name": "votes",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
-        "name": "post",
-        "type": "relation",
-        "required": true,
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "help": "",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
         "presentable": false,
-        "unique": false,
-        "options": {
-          "collectionId": "posts_collection_id",
-          "cascadeDelete": true,
-          "minSelect": 1,
-          "maxSelect": 1,
-          "displayFields": ["title"]
-        }
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
       },
       {
-        "name": "user",
-        "type": "relation",
-        "required": true,
+        "cascadeDelete": true,
+        "collectionId": "pbc_posts000001",
+        "help": "",
+        "hidden": false,
+        "id": "relation41120485",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "post",
         "presentable": false,
-        "unique": false,
-        "options": {
-          "collectionId": "_pb_users_auth_",
-          "cascadeDelete": true,
-          "minSelect": 1,
-          "maxSelect": 1,
-          "displayFields": ["name"]
-        }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "_pb_users_auth_",
+        "help": "",
+        "hidden": false,
+        "id": "relation41120486",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "user",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
       }
     ],
     "indexes": [
       "CREATE UNIQUE INDEX `idx_unique_user_post_vote` ON `votes` (`user`, `post`)"
     ],
-    "listRule": "@request.auth.id != \"\"",
-    "viewRule": "@request.auth.id != \"\"",
-    "createRule": "@request.auth.id != \"\" && @request.auth.id = user.id",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != '' && @request.auth.id = user.id",
     "updateRule": null,
-    "deleteRule": "@request.auth.id = user.id || @request.auth.role = \"admin\""
+    "deleteRule": "@request.auth.id = user.id || @request.auth.role = 'admin'"
   },
   {
-    "id": "comments_collection_id",
+    "id": "pbc_comments001",
     "name": "comments",
     "type": "base",
     "system": false,
-    "schema": [
+    "fields": [
       {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "help": "",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "pbc_posts000001",
+        "help": "",
+        "hidden": false,
+        "id": "relation51120485",
+        "maxSelect": 1,
+        "minSelect": 1,
         "name": "post",
-        "type": "relation",
-        "required": true,
         "presentable": false,
-        "unique": false,
-        "options": {
-          "collectionId": "posts_collection_id",
-          "cascadeDelete": true,
-          "minSelect": 1,
-          "maxSelect": 1,
-          "displayFields": ["title"]
-        }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
       },
       {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "help": "",
+        "hidden": false,
+        "id": "relation51120486",
+        "maxSelect": 1,
+        "minSelect": 1,
         "name": "author",
-        "type": "relation",
-        "required": true,
         "presentable": false,
-        "unique": false,
-        "options": {
-          "collectionId": "_pb_users_auth_",
-          "cascadeDelete": false,
-          "minSelect": 1,
-          "maxSelect": 1,
-          "displayFields": ["name"]
-        }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
       },
       {
+        "autogeneratePattern": "",
+        "help": "",
+        "hidden": false,
+        "id": "text5112048593",
+        "max": 2000,
+        "min": 1,
         "name": "content",
-        "type": "text",
-        "required": true,
+        "pattern": "",
         "presentable": false,
-        "unique": false,
-        "options": { "min": 2, "max": 1000, "pattern": "" }
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
       }
     ],
     "indexes": [
@@ -185,8 +566,8 @@
     ],
     "listRule": "",
     "viewRule": "",
-    "createRule": "@request.auth.id != \"\"",
-    "updateRule": "@request.auth.id = author.id || @request.auth.role = \"admin\"",
-    "deleteRule": "@request.auth.id = author.id || @request.auth.role = \"admin\""
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "@request.auth.id = author.id || @request.auth.role = 'admin'",
+    "deleteRule": "@request.auth.id = author.id || @request.auth.role = 'admin'"
   }
 ]
