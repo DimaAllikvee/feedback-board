@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { RuneChevronUp } from './icons/RuneIcons';
 import { AnimatedCounter } from './ui/AnimatedCounter';
 
@@ -17,23 +18,22 @@ export const UpvoteButton: React.FC<UpvoteButtonProps> = ({
   orientation = 'vertical',
   isPro = false
 }) => {
-  const [animating, setAnimating] = useState(false);
-
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setAnimating(true);
-    setTimeout(() => setAnimating(false), 250);
     onVote();
   };
 
   const isVertical = orientation === 'vertical';
 
   return (
-    <button
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.1, ease: "easeOut" }}
       type="button"
       onClick={handleClick}
       aria-label={hasVoted ? 'Remove upvote' : 'Upvote this idea'}
-      className={`group relative inline-flex items-center justify-center transition-all duration-150 select-none cursor-pointer ${
+      className={`group relative inline-flex items-center justify-center transition-[background-color,border-color,color] duration-100 select-none cursor-pointer ${
         isVertical
           ? 'flex-col min-w-[50px] px-2.5 py-2 rounded-xl text-center'
           : 'flex-row gap-1.5 px-3 py-1.5 rounded-lg'
@@ -41,11 +41,11 @@ export const UpvoteButton: React.FC<UpvoteButtonProps> = ({
         hasVoted
           ? 'bg-zinc-800 text-zinc-100 border border-zinc-600 shadow-sm'
           : 'bg-zinc-900/80 text-zinc-400 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/60 hover:text-zinc-200'
-      } ${animating ? 'scale-95' : ''}`}
+      }`}
     >
       <RuneChevronUp
         size={isVertical ? 17 : 14}
-        className={`transition-transform duration-150 ${
+        className={`transition-transform duration-150 shrink-0 ${
           hasVoted ? 'text-zinc-100 -translate-y-0.5' : 'group-hover:-translate-y-0.5'
         }`}
       />
@@ -58,6 +58,6 @@ export const UpvoteButton: React.FC<UpvoteButtonProps> = ({
           title="Supporter Priority Weight (3x)" 
         />
       )}
-    </button>
+    </motion.button>
   );
 };

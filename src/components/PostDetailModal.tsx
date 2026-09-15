@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { FeedbackPost, Comment, User, PostStatus } from '../types';
 import { UpvoteButton } from './UpvoteButton';
 import { StatusBadge, CategoryBadge } from './StatusBadge';
@@ -66,22 +67,32 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   };
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto"
       onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-2xl bg-[#0c0d12] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl animate-modal-in overflow-hidden my-8"
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 6 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98, y: 4 }}
+        transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+        className="relative w-full max-w-2xl bg-[#0c0d12] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
-        <button
+        {/* Close Button with Tactile Feedback */}
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          type="button"
           onClick={onClose}
           aria-label="Close modal"
           className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors z-20 cursor-pointer"
         >
           <RuneX size={18} />
-        </button>
+        </motion.button>
 
         {/* Header tags */}
         <div className="flex flex-wrap items-center gap-2 mb-4 pr-10">
@@ -288,7 +299,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
           </div>
         </div>
 
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

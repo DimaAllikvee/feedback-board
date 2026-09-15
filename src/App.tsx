@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FeedbackPost, 
   Comment, 
@@ -456,22 +457,32 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
-        {/* Active Tab Views */}
-        {activeTab === 'roadmap' ? (
-          <KanbanBoard
-            posts={filteredPosts}
-            onVote={handleVote}
-            onSelectPost={setSelectedPost}
-            isPro={Boolean(currentUser?.is_pro)}
-          />
-        ) : (
-          <PostList
-            posts={filteredPosts}
-            onVote={handleVote}
-            onSelectPost={setSelectedPost}
-            isPro={Boolean(currentUser?.is_pro)}
-          />
-        )}
+        {/* Active Tab Views with Snappy Emil Kowalski Transitions */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -3 }}
+            transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {activeTab === 'roadmap' ? (
+              <KanbanBoard
+                posts={filteredPosts}
+                onVote={handleVote}
+                onSelectPost={setSelectedPost}
+                isPro={Boolean(currentUser?.is_pro)}
+              />
+            ) : (
+              <PostList
+                posts={filteredPosts}
+                onVote={handleVote}
+                onSelectPost={setSelectedPost}
+                isPro={Boolean(currentUser?.is_pro)}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Clean Minimalist Footer */}
@@ -497,46 +508,54 @@ export const App: React.FC = () => {
       <ToastStack toasts={toasts} onDismiss={handleDismissToast} />
 
       {/* Post Details Modal */}
-      {selectedPost && (
-        <PostDetailModal
-          post={selectedPost}
-          currentUser={currentUser}
-          comments={comments}
-          onClose={() => setSelectedPost(null)}
-          onVote={handleVote}
-          onAddComment={handleAddComment}
-          onUpdateStatus={handleUpdateStatus}
-          onTogglePin={handleTogglePin}
-          onDeletePost={handleDeletePost}
-          onDeleteComment={handleDeleteComment}
-        />
-      )}
+      <AnimatePresence>
+        {selectedPost && (
+          <PostDetailModal
+            post={selectedPost}
+            currentUser={currentUser}
+            comments={comments}
+            onClose={() => setSelectedPost(null)}
+            onVote={handleVote}
+            onAddComment={handleAddComment}
+            onUpdateStatus={handleUpdateStatus}
+            onTogglePin={handleTogglePin}
+            onDeletePost={handleDeletePost}
+            onDeleteComment={handleDeleteComment}
+          />
+        )}
+      </AnimatePresence>
 
       {/* New Post Modal */}
-      {isNewPostOpen && (
-        <NewPostModal
-          currentUser={currentUser}
-          onClose={() => setIsNewPostOpen(false)}
-          onSubmit={handleCreatePost}
-        />
-      )}
+      <AnimatePresence>
+        {isNewPostOpen && (
+          <NewPostModal
+            currentUser={currentUser}
+            onClose={() => setIsNewPostOpen(false)}
+            onSubmit={handleCreatePost}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Stripe PRO Modal */}
-      {isStripeModalOpen && (
-        <StripeProModal
-          currentUser={currentUser}
-          onClose={() => setIsStripeModalOpen(false)}
-          onUpgradeSuccess={handleUpgradeSuccess}
-        />
-      )}
+      {/* Stripe Supporter Modal */}
+      <AnimatePresence>
+        {isStripeModalOpen && (
+          <StripeProModal
+            currentUser={currentUser}
+            onClose={() => setIsStripeModalOpen(false)}
+            onUpgradeSuccess={handleUpgradeSuccess}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Auth Modal */}
-      {isAuthModalOpen && (
-        <AuthModal
-          onClose={() => setIsAuthModalOpen(false)}
-          onLoginSuccess={(user) => setCurrentUser(user)}
-        />
-      )}
+      <AnimatePresence>
+        {isAuthModalOpen && (
+          <AuthModal
+            onClose={() => setIsAuthModalOpen(false)}
+            onLoginSuccess={(user) => setCurrentUser(user)}
+          />
+        )}
+      </AnimatePresence>
 
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { FeedbackPost, SortOption } from '../types';
 import { UpvoteButton } from './UpvoteButton';
 import { StatusBadge, CategoryBadge } from './StatusBadge';
@@ -69,22 +70,34 @@ export const PostList: React.FC<PostListProps> = ({
       {/* Filters and Sorting bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-zinc-950/40 border border-zinc-800/80 backdrop-blur-md">
         
-        {/* Category Filter Pills */}
+        {/* Category Filter Pills with Snappy Sliding Indicator */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto py-0.5">
-          <RuneFilter size={14} className="text-zinc-500 mr-1 hidden lg:block" />
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all cursor-pointer ${
-                selectedCategory === cat.id
-                  ? 'bg-zinc-100 text-zinc-950 font-semibold shadow-sm'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 border border-transparent'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          <RuneFilter size={14} className="text-zinc-500 mr-1 hidden lg:block shrink-0" />
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat.id;
+            return (
+              <motion.button
+                key={cat.id}
+                whileTap={{ scale: 0.95 }}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`relative px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors duration-100 cursor-pointer select-none ${
+                  isActive
+                    ? 'text-zinc-950 font-semibold'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="activeCategoryPill"
+                    className="absolute inset-0 rounded-xl bg-zinc-100 shadow-sm"
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10">{cat.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
 
         {/* Total count & Sort Selector */}
