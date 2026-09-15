@@ -104,12 +104,8 @@ All secrets are strictly kept out of Git repositories (configured via `.gitignor
 
 ## 6. Team Members & Division of Work
 
-- **Dmitri Allikvee** — *Lead Full-Stack Developer & Software Architect*
-  - Designed system architecture, component hierarchy, and database schemas.
-  - Implemented React 19 UI with Tailwind CSS, Rune Icons, and micro-interactions.
-  - Configured PocketBase row-level API security rules and automated seed migrations.
-  - Integrated Stripe Test Mode billing flow and Webhook validation model.
-  - Authored multi-stage Dockerfile, docker-compose orchestration, and deployment documentation for Coolify.
+- **Dmitri Allikvee**
+- **Juri Allikvee**
 
 ---
 
