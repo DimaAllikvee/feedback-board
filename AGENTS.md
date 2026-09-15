@@ -16,5 +16,7 @@ Whenever you work on UI, components, styling, animations, or UX flows, you **MUS
 6. **[cosscom/coss (coss.com/ui)](https://github.com/cosscom/coss)** — Cal.com's official design system (Primary pattern library for SaaS filters, headers, and forms).
 7. **[keenthemes/reui (reui.io)](https://github.com/keenthemes/reui)** — High-level SaaS blocks, Kanban boards, and data layouts.
 8. **[Nexvyn/runeicons](https://github.com/Nexvyn/runeicons)** — Mandatory icon library for all SVG icons.
+9. **[jakubkrehel/skills (interfaces.dev)](https://github.com/jakubkrehel/skills)** — UI engineering & polish guidelines (installed in `.agents/skills/`: `better-ui`, `better-typography`, `better-colors`, `better-interface`, etc.).
 
 **Rule:** Do not create UI from scratch. Inspect the repositories, adapt existing verified components, and integrate them smoothly.
+
