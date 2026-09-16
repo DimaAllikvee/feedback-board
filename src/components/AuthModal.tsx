@@ -5,7 +5,9 @@ import { User, UserRole } from '../types';
 import { 
   RuneX, 
   RuneCheck,
-  RuneAlertTriangle
+  RuneAlertTriangle,
+  RuneGithub,
+  RuneGoogle
 } from './icons/RuneIcons';
 import { HometownLogo } from './icons/HometownLogo';
 
@@ -24,6 +26,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleOAuthLogin = async (provider: 'google' | 'github') => {
+    setError(null);
+    setLoading(true);
+    try {
+      const authData = await pb.collection('users').authWithOAuth2({ provider });
+      if (authData?.record) {
+        const user: User = {
+          id: authData.record.id,
+          email: authData.record.email,
+          name: authData.record.name || authData.meta?.name || authData.meta?.username || (authData.record.email?.split('@')[0]) || 'Member',
+          avatar: authData.record.avatar || authData.meta?.avatarUrl,
+          role: (authData.record.role as UserRole) || 'user',
+          is_pro: Boolean(authData.record.is_pro),
+        };
+        onLoginSuccess(user);
+        onClose();
+      }
+    } catch (err: any) {
+      console.warn(`[PocketBase OAuth Error - ${provider}]:`, err);
+      setError(`OAuth2 provider "${provider}" is not active in PocketBase. To enable Google/GitHub sign-in, open PocketBase Admin -> Settings -> Auth providers and enter your Client ID & Secret.`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,6 +263,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Social OAuth Sign In (Google & GitHub) */}
+        <div className="space-y-3 mb-5">
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleOAuthLogin('github')}
+              className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+            >
+              <RuneGithub size={15} />
+              <span>GitHub</span>
+            </button>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleOAuthLogin('google')}
+              className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+            >
+              <RuneGoogle size={15} />
+              <span>Google</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-zinc-800/80" />
+            <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">or with email</span>
+            <div className="flex-1 h-px bg-zinc-800/80" />
+          </div>
+        </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-3.5">
