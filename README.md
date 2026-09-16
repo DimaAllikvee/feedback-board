@@ -9,7 +9,7 @@
 
 **Hometown (FeedbackPulse)** is a modern, full-featured Customer Feedback & Product Roadmap platform inspired by [Canny.io](https://canny.io), [Linear](https://linear.app), and top-tier design systems ([Cal.com Coss](https://coss.com/ui), [KeenThemes ReUI](https://reui.io), [shadcn/ui](https://ui.shadcn.com), [rare-ui](https://rareui.com), [beui.dev](https://beui.dev), [Aceternity UI](https://ui.aceternity.com), and [Rune Icons](https://github.com/Nexvyn/runeicons)).
 
-### 🌐 Live Production Links:
+### Live Production Links:
 - **Web Application (Coolify Live):** [http://yxobbi5kkfyayg7w3e5ixyx7.176.112.158.15.sslip.io/](http://yxobbi5kkfyayg7w3e5ixyx7.176.112.158.15.sslip.io/)
 - **PocketBase Admin & REST API:** [http://pocketbase-yfgsu5yrrfnhs5lxpsjz0fsm.176.112.158.15.sslip.io/_/](http://pocketbase-yfgsu5yrrfnhs5lxpsjz0fsm.176.112.158.15.sslip.io/_/)
 - **GitHub Repository (Source Code):** [https://github.com/DimaAllikvee/feedback-board](https://github.com/DimaAllikvee/feedback-board)
@@ -20,10 +20,10 @@
 
 ### 1. Interactive Roadmap (Kanban Board with Drag-and-Drop)
 - **Fluid HTML5 Drag-and-Drop:** Move proposals effortlessly across 4 lifecycle stages:
-  - 🟡 **Under Review:** Assessing customer demand and feasibility.
-  - 🔵 **Planned:** Scheduled on the product roadmap.
-  - 🟣 **In Progress:** Active engineering and design.
-  - 🟢 **Completed:** Shipped to live production.
+  - **Under Review:** Assessing customer demand and feasibility.
+  - **Planned:** Scheduled on the product roadmap.
+  - **In Progress:** Active engineering and design.
+  - **Completed:** Shipped to live production.
 - **Tactile Drag Affordances:** Precision grip handle icons (`RuneGripVertical`), `cursor-grab / active:cursor-grabbing`, and `select-none` to prevent accidental text selection during mouse drags.
 - **Accessible Quick-Status Selector (1-Click Move):** In addition to dragging, each card features a native keyboard-accessible milestone dropdown for quick updates on touchscreens and laptops.
 - **Roadmap Velocity Progress Bar:** Header bar calculating real-time percentage of shipped features and milestone distribution (`ReUI / Coss` pattern).
@@ -54,10 +54,10 @@
 ### 6. Linear & Sonner-Inspired Toast Notification System
 - **Calm Dark Glassmorphism:** Deep dark neutral background (`bg-zinc-900/95 border-zinc-800/90 shadow-2xl backdrop-blur-2xl ring-1 ring-white/[0.08]`) that fits seamlessly into the dark UI without glaring solid-color rectangles.
 - **Semantic Icon Badges:**
-  - 🟢 **Success:** Emerald checkmark (`RuneCircleCheck`) for milestone updates, payments, and publications.
-  - 🔵 **Info:** Blue sparkles (`RuneSparkles`) for pins and general tips.
-  - 🟣 **Admin:** Purple shield (`RuneShield`) for moderation actions.
-  - 🔴 **Error:** Rose alert triangle (`RuneAlertTriangle`) for network errors.
+  - **Success:** Emerald checkmark (`RuneCircleCheck`) for milestone updates, payments, and publications.
+  - **Info:** Blue sparkles (`RuneSparkles`) for pins and general tips.
+  - **Admin:** Purple shield (`RuneShield`) for moderation actions.
+  - **Error:** Rose alert triangle (`RuneAlertTriangle`) for network errors.
 - **Spring Animations:** Driven by Framer Motion springs (`stiffness: 450, damping: 32`) following Emil Kowalski's guidelines.
 
 ### 7. Component Showcase & Design System
