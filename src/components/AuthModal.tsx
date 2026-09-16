@@ -52,10 +52,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
       const isMissingProvider = 
         err?.data?.data?.provider?.code === 'validation_invalid_provider' ||
-        err?.message?.toLowerCase().includes('missing or is not enabled');
+        err?.message?.toLowerCase().includes('missing or is not enabled') ||
+        (err?.status === 0 && !navigator.onLine === false);
 
       if (isMissingProvider) {
-        setError(`OAuth2 provider "${provider}" is not active in PocketBase. Open PocketBase Admin -> Collections -> users -> Options -> OAuth2, enable Google and click the blue "Save changes" button in the bottom right corner.`);
+        setError(`OAuth2 provider "${provider}" is not active in PocketBase. Open PocketBase Admin -> Collections -> users -> Options -> OAuth2, enable Google, enter Client ID & Secret, and click the blue "Save changes" button.`);
       } else {
         const msg = err?.data?.message || err?.message || `Failed to authenticate with ${provider}.`;
         setError(msg);
