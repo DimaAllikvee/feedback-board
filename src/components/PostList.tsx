@@ -43,7 +43,10 @@ export const PostList: React.FC<PostListProps> = ({
     if (!a.is_pinned && b.is_pinned) return 1;
 
     if (sortBy === 'votes') {
-      return b.upvotes_count - a.upvotes_count;
+      if (b.upvotes_count !== a.upvotes_count) {
+        return b.upvotes_count - a.upvotes_count;
+      }
+      return new Date(b.created).getTime() - new Date(a.created).getTime();
     }
     if (sortBy === 'newest') {
       return new Date(b.created).getTime() - new Date(a.created).getTime();

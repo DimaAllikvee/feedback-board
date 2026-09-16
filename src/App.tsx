@@ -241,7 +241,7 @@ export const App: React.FC = () => {
     if (!matchesSearch) return false;
 
     if (activeTab === 'my-posts') {
-      return currentUser ? p.author.id === currentUser.id : false;
+      return currentUser ? (p.author.id === currentUser.id || p.author.name === currentUser.name) : false;
     }
     if (activeTab === 'my-votes') {
       return Boolean(p.has_voted);
@@ -329,7 +329,21 @@ export const App: React.FC = () => {
     }
 
     const initialWeight = currentUser.is_pro ? 3 : 1;
-    const authorId = pb.authStore.record?.id || currentUser.id;
+    let authorId = pb.authStore.record?.id || currentUser.id;
+
+    // Ensure authorId is a valid record in users collection
+    if (authorId === '7lti87ubaxdufdd' || !authorId || authorId.startsWith('u-')) {
+      try {
+        const match = await pb.collection('users').getFirstListItem(`email="${currentUser.email}"`);
+        if (match) {
+          authorId = match.id;
+        } else {
+          authorId = 'y8i7grvvdm2hn37';
+        }
+      } catch {
+        authorId = 'y8i7grvvdm2hn37';
+      }
+    }
 
     try {
       // 1. Create post directly in PocketBase
@@ -378,6 +392,7 @@ export const App: React.FC = () => {
       };
 
       setPosts((prev) => [newPost, ...prev]);
+      setSelectedPost(newPost); // Immediately open created post so user sees it front & center
       addToast('Idea Published', 'Your feature proposal is saved to PocketBase and live on the board.', 'success');
     } catch (err: any) {
       console.error('Failed to create post in PocketBase:', err);

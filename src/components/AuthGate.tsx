@@ -99,10 +99,17 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
           try {
             const superAuth = await pb.collection('_superusers').authWithPassword(cleanEmail, password);
             if (superAuth?.record) {
+              let publicUserId = superAuth.record.id;
+              try {
+                const userMatch = await pb.collection('users').getFirstListItem(`email="${superAuth.record.email}"`);
+                if (userMatch) publicUserId = userMatch.id;
+              } catch {
+                // fallback
+              }
               authRecord = {
-                id: superAuth.record.id,
+                id: publicUserId,
                 email: superAuth.record.email,
-                name: 'Dmitri Allikvee (Admin)',
+                name: 'Dmitri Allikvee',
                 role: 'admin',
                 is_pro: true,
               };

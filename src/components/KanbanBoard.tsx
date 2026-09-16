@@ -81,7 +81,15 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         {COLUMNS.map((column) => {
           const colPosts = posts
             .filter((p) => p.status === column.id)
-            .sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0) || b.upvotes_count - a.upvotes_count);
+            .sort((a, b) => {
+              if (Boolean(b.is_pinned) !== Boolean(a.is_pinned)) {
+                return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+              }
+              if (b.upvotes_count !== a.upvotes_count) {
+                return b.upvotes_count - a.upvotes_count;
+              }
+              return new Date(b.created).getTime() - new Date(a.created).getTime();
+            });
           
           const Icon = column.icon;
 
