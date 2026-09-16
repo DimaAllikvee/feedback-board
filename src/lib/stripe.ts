@@ -35,14 +35,17 @@ export const SUPPORTER_PLAN: PricingPlan = {
 
 export const PRO_PLAN = SUPPORTER_PLAN;
 
-// Stripe Test Mode Checkout simulator & webhook confirmation
-export const simulateStripeCheckout = async (_userId: string, _planId: string): Promise<{ success: boolean; transactionId: string }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        transactionId: `sub_test_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
-      });
-    }, 1200);
-  });
+// Real Stripe Test Mode Hosted Checkout URLs
+export const STRIPE_CHECKOUT_URL_PROD = 'https://buy.stripe.com/test_00wcMY4zJ2Qf5qq6BAdEs01';
+export const STRIPE_CHECKOUT_URL_LOCAL = 'https://buy.stripe.com/test_eVq4gsc2beyXbOO1hgdEs02';
+
+export const getStripeCheckoutUrl = (userEmail?: string): string => {
+  const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const baseUrl = isLocal ? STRIPE_CHECKOUT_URL_LOCAL : STRIPE_CHECKOUT_URL_PROD;
+  if (userEmail) {
+    return `${baseUrl}?prefilled_email=${encodeURIComponent(userEmail)}`;
+  }
+  return baseUrl;
 };
+
+

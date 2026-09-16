@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { 
   FeedbackPost, 
   Comment, 
@@ -626,11 +627,37 @@ export const App: React.FC = () => {
     setIsStripeModalOpen(true);
   };
 
-  // Supporter Upgrade handler
-  const handleUpgradeSuccess = (_transactionId: string) => {
+  // Supporter Upgrade handler (Persisted to PocketBase users collection)
+  const handleUpgradeSuccess = async (_transactionId: string) => {
     setCurrentUser((prev) => (prev ? { ...prev, is_pro: true } : prev));
     addToast('Supporter Membership Active!', 'Thank you! Enjoy 3x upvote priority and community perks.', 'success');
+
+    if (currentUser?.id) {
+      try {
+        await pb.collection('users').update(currentUser.id, { is_pro: true });
+      } catch (err) {
+        console.warn('Could not persist is_pro to PocketBase users collection:', err);
+      }
+    }
   };
+
+  // Check for return from Stripe Hosted Checkout (?upgrade=success)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('upgrade') === 'success') {
+      window.history.replaceState({}, '', window.location.pathname);
+      handleUpgradeSuccess('stripe_checkout_redirect');
+      try {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch {
+        // confetti optional
+      }
+    }
+  }, [currentUser]);
 
   // Roadmap Metrics
   const underReviewCount = posts.filter((p) => p.status === 'under_review').length;

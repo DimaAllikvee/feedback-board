@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { User } from '../types';
-import { SUPPORTER_PLAN, simulateStripeCheckout } from '../lib/stripe';
+import { SUPPORTER_PLAN, getStripeCheckoutUrl } from '../lib/stripe';
 import { 
   RuneCrown, 
   RuneX, 
   RuneCheck, 
-  RuneSparkles 
+  RuneExternalLink,
+  RuneShield,
+  RuneSparkles
 } from './icons/RuneIcons';
 
 interface StripeProModalProps {
@@ -18,26 +20,11 @@ interface StripeProModalProps {
 export const StripeProModal: React.FC<StripeProModalProps> = ({
   currentUser,
   onClose,
-  onUpgradeSuccess,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(Boolean(currentUser?.is_pro));
+  const checkoutUrl = getStripeCheckoutUrl(currentUser?.email);
 
-  const handleCheckout = async () => {
-    setIsLoading(true);
-    try {
-      const result = await simulateStripeCheckout(currentUser?.id || 'guest', SUPPORTER_PLAN.id);
-      if (result.success) {
-        setIsSuccess(true);
-        onUpgradeSuccess(result.transactionId);
-
-        setTimeout(() => {
-          onClose();
-        }, 1600);
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const handleRedirectToStripe = () => {
+    window.location.href = checkoutUrl;
   };
 
   return (
@@ -69,17 +56,17 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
         </motion.button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-3.5 mb-6 relative z-10">
+        <div className="flex items-center gap-3.5 mb-5 relative z-10">
           <div className="flex items-center justify-center w-11 h-11 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-200 shadow-sm">
             <RuneCrown size={20} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-xl font-bold text-zinc-100 tracking-tight">
                 {SUPPORTER_PLAN.name}
               </h2>
               <span className="px-2 py-0.5 rounded-md text-[10px] font-medium tracking-wider uppercase bg-zinc-900 text-zinc-300 border border-zinc-800">
-                Supporter
+                Official Stripe Checkout
               </span>
             </div>
             <p className="text-xs text-zinc-400 mt-0.5">
@@ -88,12 +75,22 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
           </div>
         </div>
 
+        {/* Active Member Notice (if already Supporter) */}
+        {currentUser?.is_pro && (
+          <div className="mb-4 p-3 rounded-xl bg-zinc-900/80 border border-zinc-700/80 text-xs text-zinc-300 flex items-center gap-2">
+            <RuneSparkles size={14} className="text-amber-400 shrink-0" />
+            <span>
+              Your account currently has <strong className="text-zinc-100">Supporter status active</strong>. You can test or renew your subscription below anytime.
+            </span>
+          </div>
+        )}
+
         {/* Price Box */}
-        <div className="flex items-baseline gap-2 p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 mb-6 relative z-10">
+        <div className="flex items-baseline gap-2 p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 mb-5 relative z-10">
           <span className="text-3xl font-extrabold text-zinc-100">{SUPPORTER_PLAN.price}</span>
           <span className="text-xs text-zinc-400">/ {SUPPORTER_PLAN.period} (via Stripe)</span>
           <span className="ml-auto text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-            Stripe Active
+            Stripe Test Mode
           </span>
         </div>
 
@@ -112,42 +109,41 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
           ))}
         </div>
 
-        {/* Stripe Card Simulator Info */}
-        <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 mb-6 text-xs text-zinc-400 leading-relaxed relative z-10">
-          <div className="font-medium text-zinc-200 mb-1 flex items-center gap-1.5">
-            <RuneSparkles size={13} className="text-zinc-400" />
-            <span>Stripe Test Mode Simulator</span>
+        {/* Stripe Info Callout */}
+        <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 leading-relaxed mb-6 relative z-10">
+          <p className="font-semibold text-zinc-100 mb-1 flex items-center gap-1.5">
+            <RuneShield size={14} className="text-zinc-400" />
+            <span>Official Stripe Hosted Checkout</span>
+          </p>
+          <p className="text-zinc-400 text-[11px] mb-2">
+            Clicking the button will open the official, SSL-secured Stripe Checkout page. In Stripe Test Mode, enter card <code className="bg-zinc-950 px-1 py-0.5 rounded font-mono text-zinc-300 border border-zinc-800">4242 4242 4242 4242</code> with any future expiration date.
+          </p>
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+            <RuneCheck size={12} className="text-emerald-400" />
+            <span>Automatic return and instant Supporter activation upon payment</span>
           </div>
-          Uses mock card <code className="bg-zinc-950 px-1.5 py-0.5 rounded font-mono text-zinc-300 border border-zinc-800">4242 4242 4242 4242</code>. Subscribing activates the Supporter role with instant 3x priority upvoting.
         </div>
 
-        {/* CTA Button */}
-        <div className="relative z-10">
-          {isSuccess ? (
-            <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-xs font-semibold text-zinc-100 flex items-center justify-center gap-2">
-              <RuneCheck size={16} className="text-emerald-400" />
-              <span>Supporter Membership Active! Thank you for supporting Hometown.</span>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handleCheckout}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-98 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
-                  <span>Processing Checkout...</span>
-                </>
-              ) : (
-                <>
-                  <RuneCrown size={15} />
-                  <span>Join as Supporter ($9/mo)</span>
-                </>
-              )}
-            </button>
-          )}
+        {/* Primary CTA: Launch Official Stripe Checkout */}
+        <div className="space-y-2.5 relative z-10">
+          <button
+            type="button"
+            onClick={handleRedirectToStripe}
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-100 active:scale-98 transition-all cursor-pointer shadow-lg hover:shadow-white/10"
+          >
+            <RuneCrown size={15} />
+            <span>Proceed to Official Stripe Checkout ($9/mo)</span>
+            <RuneExternalLink size={14} className="text-zinc-600" />
+          </button>
+        </div>
+
+        {/* Security Footer */}
+        <div className="mt-5 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500">
+          <span className="flex items-center gap-1">
+            <RuneShield size={12} />
+            <span>End-to-End SSL Encrypted</span>
+          </span>
+          <span>Powered by Stripe</span>
         </div>
 
       </motion.div>

@@ -39,6 +39,8 @@ import {
   AlertTriangle,
   Bookmark,
   GripVertical,
+  CreditCard,
+  ExternalLink,
   LucideProps
 } from 'lucide-react';
 
@@ -103,5 +105,7 @@ export const RuneHeart = createRuneIcon(Heart, 2);
 export const RuneBookmark = createRuneIcon(Bookmark, 2);
 export const RuneAlertTriangle = createRuneIcon(AlertTriangle, 2);
 export const RuneGripVertical = createRuneIcon(GripVertical, 2);
+export const RuneCreditCard = createRuneIcon(CreditCard, 2);
+export const RuneExternalLink = createRuneIcon(ExternalLink, 2);
 
 
