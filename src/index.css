@@ -31,6 +31,30 @@
     outline: none;
     box-shadow: 0 0 0 2px #090a0f, 0 0 0 4px #6366f1;
   }
+
+  /* Typography Best Practices (YepType & Pierrick Calvez: Better Typography) */
+  body {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+  }
+
+  p {
+    text-wrap: pretty;
+    line-height: 1.55;
+  }
+}
+
+/* Tabular figures for numbers, counters, timestamps */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Custom modern scrollbars */

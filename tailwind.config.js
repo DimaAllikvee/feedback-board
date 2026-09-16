@@ -35,7 +35,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Geist', 'Plus Jakarta Sans', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono', 'JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)',

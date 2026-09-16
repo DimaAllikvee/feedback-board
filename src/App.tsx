@@ -10,7 +10,8 @@ import {
 } from './types';
 import { 
   pb, 
-  INITIAL_POSTS 
+  INITIAL_POSTS,
+  INITIAL_COMMENTS 
 } from './lib/pocketbase';
 import { Navbar } from './components/Navbar';
 import { KanbanBoard } from './components/KanbanBoard';
@@ -132,12 +133,31 @@ export const App: React.FC = () => {
   useEffect(() => {
     async function loadDataFromPocketBase() {
       try {
-        const records = await pb.collection('posts').getFullList({
-          sort: '-created',
-          expand: 'author',
-        });
-        if (records && records.length > 0) {
-          const mapped: FeedbackPost[] = records.map((r) => ({
+        const [postRecords, commentRecords] = await Promise.all([
+          pb.collection('posts').getFullList({
+            sort: '-created',
+            expand: 'author',
+          }),
+          pb.collection('comments').getFullList({
+            sort: 'created',
+            expand: 'author',
+          }).catch(() => []),
+        ]);
+
+        let userVotedPostIds = new Set<string>();
+        if (pb.authStore.isValid && pb.authStore.record?.id) {
+          try {
+            const userVotes = await pb.collection('votes').getFullList({
+              filter: `user = "${pb.authStore.record.id}"`,
+            });
+            userVotedPostIds = new Set(userVotes.map((v) => v.post));
+          } catch {
+            // votes read optional
+          }
+        }
+
+        if (postRecords && postRecords.length > 0) {
+          const mappedPosts: FeedbackPost[] = postRecords.map((r) => ({
             id: r.id,
             title: r.title,
             description: r.description,
@@ -151,23 +171,64 @@ export const App: React.FC = () => {
               role: r.expand?.author?.role || 'user',
             },
             upvotes_count: r.upvotes_count || 0,
-            has_voted: false,
+            has_voted: userVotedPostIds.has(r.id),
             comments_count: r.comments_count || 0,
             is_pinned: Boolean(r.is_pinned),
             created: r.created,
             updated: r.updated,
           }));
-          setPosts(mapped);
-          addToast('Connected to PocketBase', 'Synced live community records', 'success');
+          setPosts(mappedPosts);
+
+          const mappedComments: Comment[] = (commentRecords || []).map((c) => ({
+            id: c.id,
+            post_id: c.post,
+            author: {
+              id: c.expand?.author?.id || c.author,
+              name: c.expand?.author?.name || 'Community Member',
+              avatar: c.expand?.author?.avatar,
+              is_pro: Boolean(c.expand?.author?.is_pro),
+              role: c.expand?.author?.role || 'user',
+            },
+            content: c.content,
+            created: c.created,
+          }));
+          setComments(mappedComments);
         } else {
           setPosts(INITIAL_POSTS);
+          setComments(INITIAL_COMMENTS);
         }
       } catch {
         setPosts(INITIAL_POSTS);
+        setComments(INITIAL_COMMENTS);
       }
     }
     loadDataFromPocketBase();
   }, []);
+
+  // Sync user's personal votes when auth changes
+  useEffect(() => {
+    async function syncUserVotes() {
+      if (!pb.authStore.isValid || !pb.authStore.record?.id) {
+        setPosts((prev) => prev.map((p) => ({ ...p, has_voted: false })));
+        return;
+      }
+      try {
+        const userVotes = await pb.collection('votes').getFullList({
+          filter: `user = "${pb.authStore.record.id}"`,
+        });
+        const votedSet = new Set(userVotes.map((v) => v.post));
+        setPosts((prev) =>
+          prev.map((p) => ({
+            ...p,
+            has_voted: votedSet.has(p.id),
+          }))
+        );
+      } catch {
+        // silent fallback
+      }
+    }
+    syncUserVotes();
+  }, [currentUser]);
 
   // Filter posts based on search query
   const filteredPosts = posts.filter((p) => {
@@ -189,24 +250,28 @@ export const App: React.FC = () => {
   });
 
   // Upvote Action (Calculates weights: PRO users get 3x voting weight!)
-  const handleVote = (postId: string) => {
+  const handleVote = async (postId: string) => {
     if (!currentUser) {
       addToast('Sign In Required', 'Please sign in to upvote feature proposals.', 'info');
       setIsAuthModalOpen(true);
       return;
     }
 
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post.id === postId) {
-          const alreadyVoted = Boolean(post.has_voted);
-          const weight = currentUser.is_pro ? 3 : 1;
-          const newCount = alreadyVoted
-            ? Math.max(0, post.upvotes_count - weight)
-            : post.upvotes_count + weight;
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
 
+    const alreadyVoted = Boolean(post.has_voted);
+    const weight = currentUser.is_pro ? 3 : 1;
+    const newCount = alreadyVoted
+      ? Math.max(0, post.upvotes_count - weight)
+      : post.upvotes_count + weight;
+
+    // Optimistic UI update
+    setPosts((prevPosts) =>
+      prevPosts.map((p) => {
+        if (p.id === postId) {
           const updated = {
-            ...post,
+            ...p,
             has_voted: !alreadyVoted,
             upvotes_count: newCount,
           };
@@ -215,96 +280,177 @@ export const App: React.FC = () => {
             setSelectedPost(updated);
           }
 
-          if (!alreadyVoted) {
-            addToast(
-              'Vote Registered',
-              currentUser.is_pro ? '+3 Supporter Priority Votes recorded!' : '+1 vote recorded.',
-              'success'
-            );
-          } else {
-            addToast('Vote Removed', 'Your upvote has been revoked.', 'info');
-          }
-
-          return updated;
-        }
-        return post;
-      })
-    );
-  };
-
-  // Submit New Proposal
-  const handleCreatePost = (data: { title: string; description: string; category: PostCategory }) => {
-    if (!currentUser) {
-      addToast('Sign In Required', 'Please sign in to submit a proposal.', 'info');
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    const newPost: FeedbackPost = {
-      id: `post-${Date.now()}`,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      status: 'under_review',
-      author: {
-        id: currentUser.id,
-        name: currentUser.name,
-        is_pro: currentUser.is_pro,
-        role: currentUser.role,
-      },
-      upvotes_count: currentUser.is_pro ? 3 : 1,
-      has_voted: true,
-      comments_count: 0,
-      is_pinned: false,
-      created: new Date().toISOString(),
-      updated: new Date().toISOString(),
-    };
-
-    setPosts([newPost, ...posts]);
-    addToast('Idea Published', 'Your feature proposal is now live on the board.', 'success');
-  };
-
-  // Add Comment
-  const handleAddComment = (postId: string, content: string) => {
-    if (!currentUser) {
-      addToast('Sign In Required', 'Please sign in to add comments.', 'info');
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    const newComment: Comment = {
-      id: `comment-${Date.now()}`,
-      post_id: postId,
-      author: {
-        id: currentUser.id,
-        name: currentUser.name,
-        is_pro: currentUser.is_pro,
-        role: currentUser.role,
-      },
-      content,
-      created: new Date().toISOString(),
-    };
-
-    setComments((prev) => [...prev, newComment]);
-
-    setPosts((prev) =>
-      prev.map((p) => {
-        if (p.id === postId) {
-          const updated = { ...p, comments_count: p.comments_count + 1 };
-          if (selectedPost && selectedPost.id === postId) {
-            setSelectedPost(updated);
-          }
           return updated;
         }
         return p;
       })
     );
 
-    addToast('Comment Posted', 'Your reply was added to the discussion.', 'info');
+    if (!alreadyVoted) {
+      addToast(
+        'Vote Registered',
+        currentUser.is_pro ? '+3 Supporter Priority Votes recorded!' : '+1 vote recorded.',
+        'success'
+      );
+    } else {
+      addToast('Vote Removed', 'Your upvote has been revoked.', 'info');
+    }
+
+    // Persist to PocketBase
+    try {
+      const userId = pb.authStore.record?.id || currentUser.id;
+      if (!alreadyVoted) {
+        await pb.collection('votes').create({
+          user: userId,
+          post: postId,
+          weight,
+        });
+      } else {
+        const existing = await pb.collection('votes').getFirstListItem(`user="${userId}" && post="${postId}"`);
+        if (existing) {
+          await pb.collection('votes').delete(existing.id);
+        }
+      }
+
+      await pb.collection('posts').update(postId, {
+        upvotes_count: newCount,
+      });
+    } catch (err) {
+      console.warn('PocketBase vote sync note:', err);
+    }
   };
 
-  // Admin status update
-  const handleUpdateStatus = (postId: string, newStatus: PostStatus) => {
+  // Submit New Proposal (Directly saved to PocketBase)
+  const handleCreatePost = async (data: { title: string; description: string; category: PostCategory }) => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to submit a proposal.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const initialWeight = currentUser.is_pro ? 3 : 1;
+    const authorId = pb.authStore.record?.id || currentUser.id;
+
+    try {
+      // 1. Create post directly in PocketBase
+      const record = await pb.collection('posts').create({
+        title: data.title.trim(),
+        description: data.description.trim(),
+        category: data.category,
+        status: 'under_review',
+        author: authorId,
+        upvotes_count: initialWeight,
+        comments_count: 0,
+        is_pinned: false,
+      }, { expand: 'author' });
+
+      // 2. Register initial author vote in votes collection
+      try {
+        await pb.collection('votes').create({
+          user: authorId,
+          post: record.id,
+          weight: initialWeight,
+        });
+      } catch (voteErr) {
+        console.warn('Initial vote record creation notice:', voteErr);
+      }
+
+      // 3. Construct the UI post object with the real PocketBase ID
+      const newPost: FeedbackPost = {
+        id: record.id,
+        title: record.title,
+        description: record.description,
+        category: record.category as PostCategory,
+        status: record.status as PostStatus,
+        author: {
+          id: record.expand?.author?.id || authorId,
+          name: record.expand?.author?.name || currentUser.name,
+          avatar: record.expand?.author?.avatar,
+          is_pro: currentUser.is_pro,
+          role: currentUser.role,
+        },
+        upvotes_count: initialWeight,
+        has_voted: true,
+        comments_count: 0,
+        is_pinned: false,
+        created: record.created,
+        updated: record.updated,
+      };
+
+      setPosts((prev) => [newPost, ...prev]);
+      addToast('Idea Published', 'Your feature proposal is saved to PocketBase and live on the board.', 'success');
+    } catch (err: any) {
+      console.error('Failed to create post in PocketBase:', err);
+      const errMsg = err?.data?.message || err?.message || 'Could not save post to PocketBase.';
+      addToast('Error Publishing Idea', errMsg, 'admin');
+    }
+  };
+
+  // Add Comment (Persisted to PocketBase)
+  const handleAddComment = async (postId: string, content: string) => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to add comments.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const authorId = pb.authStore.record?.id || currentUser.id;
+
+    try {
+      const record = await pb.collection('comments').create({
+        post: postId,
+        author: authorId,
+        content: content.trim(),
+      }, { expand: 'author' });
+
+      const newComment: Comment = {
+        id: record.id,
+        post_id: postId,
+        author: {
+          id: record.expand?.author?.id || authorId,
+          name: record.expand?.author?.name || currentUser.name,
+          avatar: record.expand?.author?.avatar,
+          is_pro: currentUser.is_pro,
+          role: currentUser.role,
+        },
+        content: record.content,
+        created: record.created,
+      };
+
+      setComments((prev) => [...prev, newComment]);
+
+      const post = posts.find((p) => p.id === postId);
+      const nextCommentsCount = (post?.comments_count || 0) + 1;
+
+      setPosts((prev) =>
+        prev.map((p) => {
+          if (p.id === postId) {
+            const updated = { ...p, comments_count: nextCommentsCount };
+            if (selectedPost && selectedPost.id === postId) {
+              setSelectedPost(updated);
+            }
+            return updated;
+          }
+          return p;
+        })
+      );
+
+      // Persist comments_count to post
+      try {
+        await pb.collection('posts').update(postId, { comments_count: nextCommentsCount });
+      } catch {
+        // optional update
+      }
+
+      addToast('Comment Posted', 'Your reply was saved to PocketBase.', 'info');
+    } catch (err: any) {
+      console.error('Failed to save comment in PocketBase:', err);
+      addToast('Failed to Post Comment', err?.message || 'Could not save comment to PocketBase', 'admin');
+    }
+  };
+
+  // Admin status update (Persisted to PocketBase)
+  const handleUpdateStatus = async (postId: string, newStatus: PostStatus) => {
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id === postId) {
@@ -318,39 +464,62 @@ export const App: React.FC = () => {
       })
     );
     addToast('Status Changed', `Roadmap milestone moved to ${newStatus.replace('_', ' ')}`, 'admin');
+
+    try {
+      await pb.collection('posts').update(postId, { status: newStatus });
+    } catch (err) {
+      console.warn('PocketBase status update note:', err);
+    }
   };
 
-  // Admin pin toggle
-  const handleTogglePin = (postId: string) => {
+  // Admin pin toggle (Persisted to PocketBase)
+  const handleTogglePin = async (postId: string) => {
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    const nextPinned = !post.is_pinned;
+
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id === postId) {
-          const updated = { ...p, is_pinned: !p.is_pinned };
+          const updated = { ...p, is_pinned: nextPinned };
           if (selectedPost && selectedPost.id === postId) {
             setSelectedPost(updated);
           }
-          addToast(
-            updated.is_pinned ? 'Feature Pinned' : 'Feature Unpinned',
-            updated.is_pinned ? 'Pinned to top of list' : 'Returned to standard sorting',
-            'admin'
-          );
           return updated;
         }
         return p;
       })
     );
+
+    addToast(
+      nextPinned ? 'Feature Pinned' : 'Feature Unpinned',
+      nextPinned ? 'Pinned to top of list' : 'Returned to standard sorting',
+      'admin'
+    );
+
+    try {
+      await pb.collection('posts').update(postId, { is_pinned: nextPinned });
+    } catch (err) {
+      console.warn('PocketBase pin toggle note:', err);
+    }
   };
 
-  // Admin delete post
-  const handleDeletePost = (postId: string) => {
+  // Admin delete post (Persisted to PocketBase)
+  const handleDeletePost = async (postId: string) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
     setComments((prev) => prev.filter((c) => c.post_id !== postId));
     setSelectedPost(null);
     addToast('Proposal Deleted', 'Feature card removed from database.', 'admin');
+
+    try {
+      await pb.collection('posts').delete(postId);
+    } catch (err) {
+      console.warn('PocketBase delete post note:', err);
+    }
   };
 
-  // Admin delete comment
-  const handleDeleteComment = (commentId: string) => {
+  // Admin delete comment (Persisted to PocketBase)
+  const handleDeleteComment = async (commentId: string) => {
     setComments((prev) => prev.filter((c) => c.id !== commentId));
     if (selectedPost) {
       setPosts((prev) =>
@@ -362,6 +531,12 @@ export const App: React.FC = () => {
       );
     }
     addToast('Comment Removed', 'Moderation action completed.', 'admin');
+
+    try {
+      await pb.collection('comments').delete(commentId);
+    } catch (err) {
+      console.warn('PocketBase delete comment note:', err);
+    }
   };
 
   // Log Out Handler
