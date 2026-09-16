@@ -47,6 +47,8 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
 
   const postComments = comments.filter((c) => c.post_id === post.id);
   const isAdmin = currentUser?.role === 'admin';
+  const isAuthor = Boolean(currentUser && currentUser.id === post.author.id);
+  const canModerate = isAdmin || isAuthor;
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,13 +144,13 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
           <span className="text-[11px] text-zinc-500">Quick reactions</span>
         </div>
 
-        {/* ADMIN MODERATION CONTROLS */}
-        {isAdmin && (
+        {/* MODERATION / STATUS CONTROLS */}
+        {canModerate && (
           <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 mb-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 text-xs font-semibold text-zinc-200">
                 <RuneShield size={15} className="text-zinc-400" />
-                <span>Moderation Controls (Admin)</span>
+                <span>{isAdmin ? 'Moderation Controls (Admin)' : 'Proposal Controls (Author)'}</span>
               </div>
               {statusSuccessMessage && (
                 <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-medium">

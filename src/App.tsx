@@ -464,8 +464,36 @@ export const App: React.FC = () => {
     }
   };
 
-  // Admin status update (Persisted to PocketBase)
+  // Roadmap milestone status update (Persisted to PocketBase)
   const handleUpdateStatus = async (postId: string, newStatus: PostStatus) => {
+    if (!currentUser) {
+      addToast('Sign In Required', 'Please sign in to update roadmap status.', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    if (post.status === newStatus) return;
+
+    const oldStatus = post.status;
+    const isAuthor = currentUser.id === post.author.id;
+    const isAdmin = currentUser.role === 'admin';
+
+    if (!isAdmin && !isAuthor) {
+      addToast('Permission Denied', 'Only project admins or the proposal author can update status.', 'admin');
+      return;
+    }
+
+    const statusLabels: Record<PostStatus, string> = {
+      under_review: 'Under Review',
+      planned: 'Planned',
+      in_progress: 'In Progress',
+      completed: 'Completed',
+      closed: 'Closed',
+    };
+
+    // Optimistic update
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id === postId) {
@@ -478,12 +506,31 @@ export const App: React.FC = () => {
         return p;
       })
     );
-    addToast('Status Changed', `Roadmap milestone moved to ${newStatus.replace('_', ' ')}`, 'admin');
+
+    addToast(
+      'Milestone Updated',
+      `Moved "${post.title.slice(0, 28)}${post.title.length > 28 ? '...' : ''}" to ${statusLabels[newStatus]}`,
+      'admin'
+    );
 
     try {
       await pb.collection('posts').update(postId, { status: newStatus });
-    } catch (err) {
-      console.warn('PocketBase status update note:', err);
+    } catch (err: any) {
+      console.error('PocketBase status update failed:', err);
+      // Revert optimistic update
+      setPosts((prev) =>
+        prev.map((p) => {
+          if (p.id === postId) {
+            const reverted = { ...p, status: oldStatus };
+            if (selectedPost && selectedPost.id === postId) {
+              setSelectedPost(reverted);
+            }
+            return reverted;
+          }
+          return p;
+        })
+      );
+      addToast('Update Failed', err?.message || 'Could not update status in PocketBase.', 'admin');
     }
   };
 
@@ -690,8 +737,10 @@ export const App: React.FC = () => {
                   {activeTab === 'roadmap' ? (
                     <KanbanBoard
                       posts={filteredPosts}
+                      currentUser={currentUser}
                       onVote={handleVote}
                       onSelectPost={setSelectedPost}
+                      onUpdateStatus={handleUpdateStatus}
                       isPro={Boolean(currentUser?.is_pro)}
                     />
                   ) : (

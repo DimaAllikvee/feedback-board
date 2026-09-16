@@ -38,6 +38,7 @@ import {
   Heart,
   AlertTriangle,
   Bookmark,
+  GripVertical,
   LucideProps
 } from 'lucide-react';
 
@@ -101,5 +102,6 @@ export const RuneLightbulb = createRuneIcon(Lightbulb, 2);
 export const RuneHeart = createRuneIcon(Heart, 2);
 export const RuneBookmark = createRuneIcon(Bookmark, 2);
 export const RuneAlertTriangle = createRuneIcon(AlertTriangle, 2);
+export const RuneGripVertical = createRuneIcon(GripVertical, 2);
 
 
