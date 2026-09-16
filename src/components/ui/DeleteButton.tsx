@@ -88,17 +88,17 @@ function Circle({
         type="button"
         aria-label={label}
         onClick={onClick}
-        whileHover={reduced ? undefined : { scale: 1.05 }}
-        whileTap={reduced ? undefined : { scale: 0.85 }}
+        whileHover={reduced ? undefined : { scale: 1.08 }}
+        whileTap={reduced ? undefined : { scale: 0.88 }}
         transition={PRESS}
         className={CIRCLE}
       >
         <svg
           {...ICON}
-          width="12"
-          height="12"
+          width="13"
+          height="13"
           stroke="currentColor"
-          strokeWidth="3"
+          strokeWidth="2.3"
         >
           {children}
         </svg>
@@ -265,10 +265,10 @@ export function DeleteButton({
             exit="hidden"
           >
             <Circle label="Confirm delete" onClick={() => resolve("deleted")}>
-              <path d="M3 10.5 8 15 17 5" stroke={ACCENT} />
+              <path d="M20 6 9 17l-5-5" stroke={ACCENT} strokeWidth="2.4" />
             </Circle>
             <Circle label="Cancel" onClick={() => resolve("kept")}>
-              <path d="M5 5 15 15M15 5 5 15" />
+              <path d="M18 6 6 18M6 6l12 12" strokeWidth="2.4" />
             </Circle>
           </motion.div>
         )}
