@@ -15,6 +15,7 @@ import {
 import { DeleteButton } from './ui/DeleteButton';
 import { ReactionPill } from './ui/ReactionPill';
 import { UserAvatar } from './ui/UserAvatar';
+import { CustomSelect } from './ui/CustomSelect';
 
 interface PostDetailModalProps {
   post: FeedbackPost;
@@ -162,20 +163,41 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
             <div className="flex flex-wrap items-center gap-3">
               {/* Change status */}
               <div className="flex items-center gap-2 text-xs">
-                <label htmlFor="admin-status-select" className="text-zinc-400 font-medium">Status:</label>
-                <select
-                  id="admin-status-select"
+                <span className="text-zinc-400 font-medium">Status:</span>
+                <CustomSelect<PostStatus>
                   value={post.status}
-                  onChange={(e) => handleStatusChange(e.target.value as PostStatus)}
-                  aria-label="Set roadmap status"
-                  className="bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 cursor-pointer"
-                >
-                  <option value="under_review">Under Review</option>
-                  <option value="planned">Planned</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="closed">Closed</option>
-                </select>
+                  onChange={(val) => handleStatusChange(val)}
+                  options={[
+                    { 
+                      value: 'under_review', 
+                      label: 'Under Review', 
+                      icon: <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" /> 
+                    },
+                    { 
+                      value: 'planned', 
+                      label: 'Planned', 
+                      icon: <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" /> 
+                    },
+                    { 
+                      value: 'in_progress', 
+                      label: 'In Progress', 
+                      icon: <span className="w-2 h-2 rounded-full bg-purple-400 shrink-0" /> 
+                    },
+                    { 
+                      value: 'completed', 
+                      label: 'Completed', 
+                      icon: <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" /> 
+                    },
+                    { 
+                      value: 'closed', 
+                      label: 'Closed', 
+                      icon: <span className="w-2 h-2 rounded-full bg-zinc-500 shrink-0" /> 
+                    },
+                  ]}
+                  size="sm"
+                  align="left"
+                  ariaLabel="Set roadmap status"
+                />
               </div>
 
               {/* Pin toggle */}

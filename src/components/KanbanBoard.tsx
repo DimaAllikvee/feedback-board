@@ -5,6 +5,7 @@ import { CategoryBadge } from './StatusBadge';
 import { SpotlightCard } from './ui/SpotlightCard';
 import { RoadmapProgressBar } from './ui/RoadmapProgressBar';
 import { UserAvatar } from './ui/UserAvatar';
+import { CustomSelect } from './ui/CustomSelect';
 import { 
   RuneClock, 
   RuneCompass, 
@@ -299,20 +300,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                                 draggable={false}
                                 className="inline-flex items-center"
                               >
-                                <select
-                                  aria-label={`Change milestone for ${post.title}`}
+                                <CustomSelect<PostStatus>
                                   value={post.status}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    onUpdateStatus(post.id, e.target.value as PostStatus);
-                                  }}
-                                  className="text-[10px] font-medium bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 border border-zinc-700/70 rounded-md px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-zinc-400 cursor-pointer transition-colors"
-                                >
-                                  <option value="under_review">Under Review</option>
-                                  <option value="planned">Planned</option>
-                                  <option value="in_progress">In Progress</option>
-                                  <option value="completed">Completed</option>
-                                </select>
+                                  onChange={(val) => onUpdateStatus(post.id, val)}
+                                  options={[
+                                    { value: 'under_review', label: 'Under Review', icon: <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" /> },
+                                    { value: 'planned', label: 'Planned', icon: <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" /> },
+                                    { value: 'in_progress', label: 'In Progress', icon: <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" /> },
+                                    { value: 'completed', label: 'Completed', icon: <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" /> },
+                                  ]}
+                                  size="xs"
+                                  align="left"
+                                  ariaLabel={`Change milestone for ${post.title}`}
+                                />
                               </div>
                             )}
                           </div>

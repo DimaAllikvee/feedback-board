@@ -10,8 +10,11 @@ import {
   RuneArrowUpDown, 
   RunePin, 
   RuneMessageSquare, 
-  RuneSparkles 
+  RuneSparkles,
+  RuneFlame,
+  RuneClock
 } from './icons/RuneIcons';
+import { CustomSelect } from './ui/CustomSelect';
 
 interface PostListProps {
   posts: FeedbackPost[];
@@ -71,7 +74,7 @@ export const PostList: React.FC<PostListProps> = ({
   return (
     <div className="w-full space-y-4">
       {/* Filters and Sorting bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-zinc-950/40 border border-zinc-800/80 backdrop-blur-md">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-zinc-950/40 border border-zinc-800/80 backdrop-blur-md relative z-20">
         
         {/* Category Filter Pills with Snappy Sliding Indicator */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto py-0.5">
@@ -109,19 +112,19 @@ export const PostList: React.FC<PostListProps> = ({
             Showing <strong className="text-zinc-200 font-mono">{sortedPosts.length}</strong> items
           </span>
 
-          <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700/60 rounded-xl px-2.5 py-1.5">
-            <RuneArrowUpDown size={13} className="text-zinc-400" />
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              aria-label="Sort feedback posts"
-              className="bg-transparent text-xs text-zinc-200 focus:outline-none cursor-pointer pr-1"
-            >
-              <option value="votes" className="bg-zinc-900 text-zinc-200">Most Upvoted</option>
-              <option value="trending" className="bg-zinc-900 text-zinc-200">Trending</option>
-              <option value="newest" className="bg-zinc-900 text-zinc-200">Newest First</option>
-            </select>
-          </div>
+          <CustomSelect<SortOption>
+            value={sortBy}
+            onChange={(val) => setSortBy(val)}
+            icon={<RuneArrowUpDown size={13} className="text-zinc-400" />}
+            options={[
+              { value: 'votes', label: 'Most Upvoted', icon: <RuneSparkles size={13} className="text-amber-400" /> },
+              { value: 'trending', label: 'Trending', icon: <RuneFlame size={13} className="text-orange-400" /> },
+              { value: 'newest', label: 'Newest First', icon: <RuneClock size={13} className="text-blue-400" /> },
+            ]}
+            size="sm"
+            align="right"
+            ariaLabel="Sort feedback posts"
+          />
         </div>
 
       </div>
