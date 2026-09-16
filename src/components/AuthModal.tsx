@@ -46,7 +46,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
     } catch (err: any) {
       console.warn(`[PocketBase OAuth Error - ${provider}]:`, err);
-      setError(`OAuth2 provider "${provider}" is not active in PocketBase. To enable Google/GitHub sign-in, open PocketBase Admin -> Settings -> Auth providers and enter your Client ID & Secret.`);
+      if (err?.isAbort) {
+        // User closed the popup
+        return;
+      }
+      const isMissingProvider = 
+        err?.data?.data?.provider?.code === 'validation_invalid_provider' ||
+        err?.message?.toLowerCase().includes('missing or is not enabled');
+
+      if (isMissingProvider) {
+        setError(`OAuth2 provider "${provider}" is not active in PocketBase. Open PocketBase Admin -> Collections -> users -> Options -> OAuth2, enable Google and click the blue "Save changes" button in the bottom right corner.`);
+      } else {
+        const msg = err?.data?.message || err?.message || `Failed to authenticate with ${provider}.`;
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
