@@ -20,10 +20,12 @@ import { UserAvatar } from './ui/UserAvatar';
 import { ReactionPill } from './ui/ReactionPill';
 import { PostStatus, PostCategory } from '../types';
 
+import { ToastMessage } from './ui/Toast';
+
 interface ShowcaseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTriggerToast: (title: string, description?: string, type?: 'success' | 'info' | 'admin') => void;
+  onTriggerToast: (title: string, description?: string, type?: ToastMessage['type']) => void;
 }
 
 export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
@@ -363,6 +365,14 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                     className="px-3 py-1.5 rounded-xl bg-purple-950/40 border border-purple-500/30 text-purple-300 text-xs font-medium hover:bg-purple-950/70 transition-colors cursor-pointer"
                   >
                     Trigger Admin Toast
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onTriggerToast('Connection Failed', 'Could not reach server. Retrying in 5s...', 'error')}
+                    className="px-3 py-1.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs font-medium hover:bg-rose-950/70 transition-colors cursor-pointer"
+                  >
+                    Trigger Error Toast
                   </button>
                 </div>
               </div>

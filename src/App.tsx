@@ -59,7 +59,7 @@ export const App: React.FC = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Toast Helper
-  const addToast = (title: string, description?: string, type: 'success' | 'info' | 'admin' = 'info') => {
+  const addToast = (title: string, description?: string, type: ToastMessage['type'] = 'info') => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const newToast: ToastMessage = { id, title, description, type };
     setToasts((prev) => [...prev, newToast]);
@@ -398,7 +398,7 @@ export const App: React.FC = () => {
     } catch (err: any) {
       console.error('Failed to create post in PocketBase:', err);
       const errMsg = err?.data?.message || err?.message || 'Could not save post to PocketBase.';
-      addToast('Error Publishing Idea', errMsg, 'admin');
+      addToast('Error Publishing Idea', errMsg, 'error');
     }
   };
 
@@ -461,7 +461,7 @@ export const App: React.FC = () => {
       addToast('Comment Posted', 'Your reply was saved to PocketBase.', 'info');
     } catch (err: any) {
       console.error('Failed to save comment in PocketBase:', err);
-      addToast('Failed to Post Comment', err?.message || 'Could not save comment to PocketBase', 'admin');
+      addToast('Failed to Post Comment', err?.message || 'Could not save comment to PocketBase', 'error');
     }
   };
 
@@ -506,7 +506,7 @@ export const App: React.FC = () => {
     addToast(
       'Milestone Updated',
       `Moved "${post.title.slice(0, 28)}${post.title.length > 28 ? '...' : ''}" to ${statusLabels[newStatus]}`,
-      'admin'
+      'success'
     );
 
     // 3. Persist to PocketBase
@@ -540,7 +540,7 @@ export const App: React.FC = () => {
     addToast(
       nextPinned ? 'Feature Pinned' : 'Feature Unpinned',
       nextPinned ? 'Pinned to top of list' : 'Returned to standard sorting',
-      'admin'
+      'info'
     );
 
     try {
