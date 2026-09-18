@@ -237,7 +237,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 > 2. The provider redirects back to PocketBase's redirect URI: `http://pocketbase-.../api/oauth2-redirect`.
 > 3. PocketBase exchanges the authorization code for access and ID tokens, extracts profile details (email, name, avatar), creates or links the user record, and issues a JWT session token to the client frontend.
 
-### Q5: What is the significance of Persistent Volumes in Docker and Coolify?
+### Q5: What is the significance of Persistent Volumes in Coolify?
 > **Answer:**  
 > Docker containers are ephemeral by default — any files written to the container layer are deleted whenever a container restarts or updates.  
 > PocketBase persists data in SQLite files at `/pb/pb_data`. Mapping a **Persistent Volume** (`pb_data:/pb/pb_data`) ensures that the database file resides safely on the host machine's disk, surviving container reboots, image upgrades, and Coolify redeploys.
