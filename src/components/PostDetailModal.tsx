@@ -278,23 +278,23 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
 
           {/* New comment input */}
           <form onSubmit={handleCommentSubmit} className="mb-6">
-            <div className="relative rounded-2xl bg-zinc-900/80 border border-zinc-800 p-2 focus-within:border-zinc-700 transition-colors">
+            <div className="relative rounded-2xl bg-zinc-900/80 border border-zinc-800 p-2.5 focus-within:border-indigo-500/60 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:bg-zinc-900 transition-all duration-150 shadow-sm">
               <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 disabled={!currentUser}
                 placeholder={currentUser ? `Share constructive context as ${currentUser.name}...` : 'Sign in to join the discussion...'}
                 rows={2}
-                className="w-full bg-transparent text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 p-2 focus:outline-none resize-none disabled:opacity-60"
+                className="w-full bg-transparent text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 p-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 resize-none disabled:opacity-60 no-focus-ring"
               />
-              <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 px-2">
+              <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 px-1.5 mt-0.5">
                 <span className="text-[11px] text-zinc-500 font-mono">
                   {commentText.length}/500
                 </span>
                 <button
                   type="submit"
                   disabled={!commentText.trim() || isSubmittingComment || !currentUser}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <RuneSend size={13} />
                   <span>Reply</span>

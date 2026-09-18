@@ -26,10 +26,21 @@
     --radius: 0.75rem;
   }
 
-  /* Accessible focus ring for all interactive elements (Design System Checklist) */
+  /* Accessible focus ring for interactive elements (Design System Checklist) */
   *:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px #090a0f, 0 0 0 4px #6366f1;
+    box-shadow: 0 0 0 2px #090a0f, 0 0 0 3px rgba(99, 102, 241, 0.7);
+  }
+
+  /* Embedded & transparent inputs/textareas inside compound cards delegate focus to the parent wrapper */
+  textarea.bg-transparent:focus,
+  textarea.bg-transparent:focus-visible,
+  input.bg-transparent:focus,
+  input.bg-transparent:focus-visible,
+  .no-focus-ring:focus,
+  .no-focus-ring:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   /* Typography Best Practices (YepType & Pierrick Calvez: Better Typography) */
