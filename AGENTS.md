@@ -15,7 +15,7 @@ Whenever you work on UI, components, styling, animations, or UX flows, you **MUS
 5. **[shadcn/ui](https://github.com/shadcn-ui/ui)** — Primitives, dialogs, dropdowns, cards.
 6. **[cosscom/coss (coss.com/ui)](https://github.com/cosscom/coss)** — Cal.com's official design system (Primary pattern library for SaaS filters, headers, and forms).
 7. **[keenthemes/reui (reui.io)](https://github.com/keenthemes/reui)** — High-level SaaS blocks, Kanban boards, and data layouts.
-8. **[Nexvyn/runeicons](https://github.com/Nexvyn/runeicons)** — Mandatory icon library for all SVG icons.
+8. **[Nexvyn/runeicons](https://github.com/Nexvyn/runeicons)** — Primary icon library for SVG icons in the project.
 9. **[jakubkrehel/skills (interfaces.dev)](https://github.com/jakubkrehel/skills)** — UI engineering & polish guidelines (installed in `.agents/skills/`: `better-ui`, `better-typography`, `better-colors`, `better-interface`, etc.).
 10. **[21st.dev](https://21st.dev)** — 1,000+ community-built UI components (Tailwind + Framer Motion components).
 11. **[aicss.dev](https://aicss.dev)** — UI blocks for AI agent interactions.
@@ -26,6 +26,32 @@ Whenever you work on UI, components, styling, animations, or UX flows, you **MUS
 16. **[kage.design](https://kage.design)** — Real product UI you can copy directly as an AI prompt or MCP.
 
 **Rule:** Do not create UI from scratch. Inspect the repositories, adapt existing verified components, and integrate them smoothly.
+
+---
+
+## Approved Free Icon Libraries & Solutions
+When adding or updating icons in the project, use **[Nexvyn/runeicons](https://github.com/Nexvyn/runeicons)** as the primary set, or source clean, consistent vector SVGs from these 20 approved free icon libraries:
+
+1. **[Lucide Icons](http://lucide.dev)** — Beautiful & consistent stroke icons (community fork of Feather).
+2. **[Phosphor Icons](http://phosphoricons.com)** — Flexible, clean icon family with multiple weights.
+3. **[Tabler Icons](http://tabler.io/icons)** — 5,000+ customizable open source SVG icons.
+4. **[Heroicons](http://heroicons.com)** — Hand-crafted Tailwind CSS / UI icons by the Tailwind team.
+5. **[Google Fonts Icons / Material Symbols](http://fonts.google.com/icons)** — Variable, optical size matched icons.
+6. **[Bootstrap Icons](http://icons.getbootstrap.com)** — 2,000+ crisp, battle-tested icons.
+7. **[Remix Icon](http://remixicon.com)** — Neutral-style open source system symbols.
+8. **[Iconoir](http://iconoir.com)** — 1,500+ open-source icons with zero dependencies.
+9. **[Ionicons](http://ionic.io/ionicons)** — Premium designed icons for web, iOS, and Android.
+10. **[Simple Icons](http://simpleicons.org)** — 3,000+ SVG icons for popular brands and technologies.
+11. **[The SVG](http://thesvg.org)** — Curated SVG vector collections.
+12. **[Iconify](http://iconify.design)** — Universal unified icon framework (200,000+ icons).
+13. **[Feather Icons](http://feathericons.com)** — Minimalist, clean 24x24 stroke icons.
+14. **[Radix UI Icons](http://radix-ui.com/icons)** — Crisp 15x15 pixel-perfect icons from WorkOS / Radix.
+15. **[Carbon Design System Icons](http://carbondesignsystem.com)** — IBM's enterprise-grade iconography.
+16. **[Boxicons](http://boxicons.com)** — High quality web icons designed with simplicity.
+17. **[MX Icons](http://mx-icons.vercel.app)** — Modern, snappy icon collection for next-gen apps.
+18. **[Eva Icons](http://akveo.github.io/eva-icons)** — 480+ beautifully crafted open source icons (fill and outline).
+19. **[Devicon](http://devicon.dev)** — Developer logos, programming languages, and framework marks.
+20. **[css.gg](http://css.gg)** — 700+ customizable pure CSS, SVG and Figma icons.
 
 ---
 
