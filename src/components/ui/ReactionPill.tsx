@@ -68,7 +68,7 @@ export const ReactionPill: React.FC<ReactionPillProps> = ({ className = '' }) =>
         return (
           <motion.button
             key={item.id}
-            whileTap={{ scale: 0.93 }}
+            whileTap={{ scale: 0.96 }}
             type="button"
             onClick={(e) => handleSelectReaction(item.id, e)}
             title={item.label}
@@ -88,7 +88,7 @@ export const ReactionPill: React.FC<ReactionPillProps> = ({ className = '' }) =>
       {/* Add reaction trigger button */}
       <div className="relative">
         <motion.button
-          whileTap={{ scale: 0.94 }}
+          whileTap={{ scale: 0.96 }}
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
           className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-zinc-900/60 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80 hover:border-zinc-700 transition-[background-color,border-color,color] duration-100 cursor-pointer"
@@ -105,6 +105,7 @@ export const ReactionPill: React.FC<ReactionPillProps> = ({ className = '' }) =>
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.95 }}
               transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              style={{ transformOrigin: 'bottom left' }}
               className="absolute left-0 bottom-full mb-1.5 z-30 flex items-center gap-1 p-1 rounded-xl bg-zinc-900 border border-zinc-700/80 shadow-2xl backdrop-blur-xl"
             >
               {REACTIONS.map((item) => {
@@ -113,7 +114,7 @@ export const ReactionPill: React.FC<ReactionPillProps> = ({ className = '' }) =>
                 return (
                   <motion.button
                     key={item.id}
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.94 }}
                     type="button"
                     onClick={(e) => handleSelectReaction(item.id, e)}
                     title={item.label}

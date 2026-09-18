@@ -89,7 +89,7 @@ function Circle({
         aria-label={label}
         onClick={onClick}
         whileHover={reduced ? undefined : { scale: 1.08 }}
-        whileTap={reduced ? undefined : { scale: 0.88 }}
+        whileTap={reduced ? undefined : { scale: 0.95 }}
         transition={PRESS}
         className={CIRCLE}
       >

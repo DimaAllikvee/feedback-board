@@ -129,7 +129,7 @@ export const StripeProModal: React.FC<StripeProModalProps> = ({
           <button
             type="button"
             onClick={handleRedirectToStripe}
-            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-100 active:scale-98 transition-all cursor-pointer shadow-lg hover:shadow-white/10"
+            className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-100 active:scale-[0.98] transition-[transform,background-color,box-shadow] duration-150 ease-out cursor-pointer shadow-lg hover:shadow-white/10"
           >
             <RuneCrown size={15} />
             <span>Proceed to Official Stripe Checkout ($9/mo)</span>

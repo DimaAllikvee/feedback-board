@@ -288,7 +288,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="button"
               disabled={loading}
               onClick={() => handleOAuthLogin('github')}
-              className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-[transform,background-color,border-color] duration-150 ease-out cursor-pointer active:scale-[0.98] disabled:opacity-50"
             >
               <RuneGithub size={15} />
               <span>GitHub</span>
@@ -297,7 +297,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               type="button"
               disabled={loading}
               onClick={() => handleOAuthLogin('google')}
-              className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-[transform,background-color,border-color] duration-150 ease-out cursor-pointer active:scale-[0.98] disabled:opacity-50"
             >
               <RuneGoogle size={15} />
               <span>Google</span>
@@ -372,7 +372,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-98 transition-all disabled:opacity-50 mt-2 cursor-pointer shadow-sm"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-[0.98] transition-[transform,background-color] duration-150 ease-out disabled:opacity-50 mt-2 cursor-pointer shadow-sm"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />

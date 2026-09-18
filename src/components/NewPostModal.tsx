@@ -228,7 +228,7 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-95 transition-all shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white active:scale-[0.97] transition-[transform,background-color] duration-150 ease-out shadow-sm cursor-pointer"
               >
                 <span>Publish Proposal</span>
               </button>

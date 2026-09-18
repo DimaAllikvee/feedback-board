@@ -27,8 +27,7 @@ export const UpvoteButton: React.FC<UpvoteButtonProps> = ({
 
   return (
     <motion.button
-      whileTap={{ scale: 0.92 }}
-      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.96 }}
       transition={{ duration: 0.1, ease: "easeOut" }}
       type="button"
       onClick={handleClick}

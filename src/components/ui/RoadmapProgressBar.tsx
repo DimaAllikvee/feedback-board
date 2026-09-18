@@ -39,28 +39,28 @@ export const RoadmapProgressBar: React.FC<RoadmapProgressBarProps> = ({ posts })
         {completed > 0 && (
           <div
             style={{ width: `${(completed / total) * 100}%` }}
-            className="h-full bg-emerald-500/80 transition-all duration-300"
+            className="h-full bg-emerald-500/80 transition-[width] duration-300 ease-out"
             title={`Completed: ${completed} (${pctCompleted}%)`}
           />
         )}
         {inProgress > 0 && (
           <div
             style={{ width: `${(inProgress / total) * 100}%` }}
-            className="h-full bg-purple-400/80 transition-all duration-300"
+            className="h-full bg-purple-400/80 transition-[width] duration-300 ease-out"
             title={`In Progress: ${inProgress} (${pctInProgress}%)`}
           />
         )}
         {planned > 0 && (
           <div
             style={{ width: `${(planned / total) * 100}%` }}
-            className="h-full bg-blue-400/80 transition-all duration-300"
+            className="h-full bg-blue-400/80 transition-[width] duration-300 ease-out"
             title={`Planned: ${planned} (${pctPlanned}%)`}
           />
         )}
         {underReview > 0 && (
           <div
             style={{ width: `${(underReview / total) * 100}%` }}
-            className="h-full bg-amber-400/80 transition-all duration-300"
+            className="h-full bg-amber-400/80 transition-[width] duration-300 ease-out"
             title={`Under Review: ${underReview} (${pctUnderReview}%)`}
           />
         )}

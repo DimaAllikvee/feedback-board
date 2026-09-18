@@ -166,7 +166,7 @@ export const PostList: React.FC<PostListProps> = ({
               key={post.id}
               spotlightColor="rgba(255, 255, 255, 0.03)"
               onClick={() => onSelectPost(post)}
-              className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl cursor-pointer transition-all duration-150 hover:-translate-y-0.5 border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/30 ${
+              className={`group flex items-start gap-4 p-4 sm:p-5 rounded-2xl cursor-pointer transition-[transform,border-color,background-color] duration-150 ease-out hover:-translate-y-0.5 border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/30 ${
                 post.is_pinned ? 'border-zinc-700 bg-zinc-900/50' : ''
               }`}
             >

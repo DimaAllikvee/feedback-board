@@ -299,7 +299,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
               type="button"
               disabled={loading}
               onClick={() => handleOAuthLogin('github')}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-[transform,background-color,border-color] duration-150 ease-out cursor-pointer active:scale-[0.98] disabled:opacity-50"
             >
               <RuneGithub size={15} />
               <span>GitHub</span>
@@ -308,7 +308,7 @@ export const AuthGate: React.FC<AuthGateProps> = ({ onLoginSuccess }) => {
               type="button"
               disabled={loading}
               onClick={() => handleOAuthLogin('google')}
-              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition-[transform,background-color,border-color] duration-150 ease-out cursor-pointer active:scale-[0.98] disabled:opacity-50"
             >
               <RuneGoogle size={15} />
               <span>Google</span>

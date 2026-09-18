@@ -48,7 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-[#090a0f] backdrop-blur-xl transition-all">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-[#090a0f] backdrop-blur-xl transition-colors duration-150">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
@@ -169,7 +169,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: -4 }}
                       transition={{ duration: 0.14, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-zinc-900 border border-zinc-800 p-2 shadow-2xl backdrop-blur-2xl z-50 text-xs origin-top-right"
+                      style={{ transformOrigin: 'top right' }}
+                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-zinc-900 border border-zinc-800 p-2 shadow-2xl backdrop-blur-2xl z-50 text-xs"
                       onMouseLeave={() => setRoleMenuOpen(false)}
                     >
                       <div className="px-3 py-2 border-b border-zinc-800 mb-1">
