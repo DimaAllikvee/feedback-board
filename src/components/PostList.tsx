@@ -12,7 +12,15 @@ import {
   RuneMessageSquare, 
   RuneSparkles,
   RuneFlame,
-  RuneClock
+  RuneClock,
+  RuneLayers,
+  RuneCode,
+  RuneZap,
+  RuneBug,
+  RunePlug,
+  RunePalette,
+  RuneInbox,
+  RuneRotateCcw
 } from './icons/RuneIcons';
 import { CustomSelect } from './ui/CustomSelect';
 
@@ -62,13 +70,13 @@ export const PostList: React.FC<PostListProps> = ({
     return 0;
   });
 
-  const categories: { id: string; label: string }[] = [
-    { id: 'all', label: 'All Topics' },
-    { id: 'feature', label: 'Features' },
-    { id: 'improvement', label: 'Improvements' },
-    { id: 'bug', label: 'Bug Reports' },
-    { id: 'integration', label: 'Integrations' },
-    { id: 'ui-ux', label: 'UI / UX' },
+  const categories: { id: string; label: string; icon: React.ComponentType<{ size?: number | string; className?: string }> }[] = [
+    { id: 'all', label: 'All Topics', icon: RuneLayers },
+    { id: 'feature', label: 'Features', icon: RuneCode },
+    { id: 'improvement', label: 'Improvements', icon: RuneZap },
+    { id: 'bug', label: 'Bug Reports', icon: RuneBug },
+    { id: 'integration', label: 'Integrations', icon: RunePlug },
+    { id: 'ui-ux', label: 'UI / UX', icon: RunePalette },
   ];
 
   return (
@@ -81,13 +89,14 @@ export const PostList: React.FC<PostListProps> = ({
           <RuneFilter size={14} className="text-zinc-500 mr-1 hidden lg:block shrink-0" />
           {categories.map((cat) => {
             const isActive = selectedCategory === cat.id;
+            const Icon = cat.icon;
             return (
               <motion.button
                 key={cat.id}
                 whileTap={{ scale: 0.95 }}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`relative px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors duration-100 cursor-pointer select-none ${
+                className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-colors duration-100 cursor-pointer select-none ${
                   isActive
                     ? 'text-zinc-950 font-semibold'
                     : 'text-zinc-400 hover:text-zinc-200'
@@ -100,6 +109,7 @@ export const PostList: React.FC<PostListProps> = ({
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
                 )}
+                <Icon size={12} className={isActive ? 'relative z-10 text-zinc-950' : 'relative z-10 text-zinc-500'} />
                 <span className="relative z-10">{cat.label}</span>
               </motion.button>
             );
@@ -132,10 +142,23 @@ export const PostList: React.FC<PostListProps> = ({
       {/* Post List */}
       <div className="space-y-3">
         {sortedPosts.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20">
-            <RuneSparkles size={28} className="text-zinc-600 mx-auto mb-2" />
-            <p className="text-sm font-medium text-zinc-300">No proposals match your current filters</p>
-            <p className="text-xs text-zinc-500 mt-1">Try resetting the filters or submit the first idea!</p>
+          <div className="p-10 text-center rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 mb-3 shadow-inner">
+              <RuneInbox size={22} />
+            </div>
+            <p className="text-sm font-semibold text-zinc-200">No proposals match your current filters</p>
+            <p className="text-xs text-zinc-500 mt-1 max-w-sm">Try resetting your category or search to discover all community ideas.</p>
+            {selectedCategory !== 'all' && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                type="button"
+                onClick={() => setSelectedCategory('all')}
+                className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-200 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-colors cursor-pointer shadow-sm"
+              >
+                <RuneRotateCcw size={12} />
+                <span>Reset to All Topics</span>
+              </motion.button>
+            )}
           </div>
         ) : (
           sortedPosts.map((post) => (

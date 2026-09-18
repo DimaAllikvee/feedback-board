@@ -10,7 +10,9 @@ import {
   RuneCheck, 
   RuneMessageSquare, 
   RuneSend, 
-  RuneTrash 
+  RuneTrash,
+  RuneCopy,
+  RuneCheckCheck
 } from './icons/RuneIcons';
 import { DeleteButton } from './ui/DeleteButton';
 import { ReactionPill } from './ui/ReactionPill';
@@ -45,6 +47,14 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [statusSuccessMessage, setStatusSuccessMessage] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/?post=${post.id}`;
+    navigator.clipboard.writeText(url);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
 
   const postComments = comments.filter((c) => c.post_id === post.id);
   const isAdmin = currentUser?.role === 'admin';
@@ -86,16 +96,39 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
         className="relative w-full max-w-2xl bg-[#0c0d12] border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button with Tactile Feedback */}
-        <motion.button
-          whileTap={{ scale: 0.92 }}
-          type="button"
-          onClick={onClose}
-          aria-label="Close modal"
-          className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors z-20 cursor-pointer"
-        >
-          <RuneX size={18} />
-        </motion.button>
+        {/* Actions bar top-right */}
+        <div className="absolute top-5 right-5 flex items-center gap-1.5 z-20">
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            type="button"
+            onClick={handleCopyLink}
+            aria-label="Copy proposal link"
+            title="Copy proposal link"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors cursor-pointer border border-zinc-800/60 bg-zinc-900/40"
+          >
+            {copiedLink ? (
+              <>
+                <RuneCheckCheck size={14} className="text-emerald-400" />
+                <span className="text-[11px] text-emerald-400">Copied!</span>
+              </>
+            ) : (
+              <>
+                <RuneCopy size={14} />
+                <span className="text-[11px]">Share</span>
+              </>
+            )}
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            type="button"
+            onClick={onClose}
+            aria-label="Close modal"
+            className="p-1.5 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors cursor-pointer"
+          >
+            <RuneX size={18} />
+          </motion.button>
+        </div>
 
         {/* Header tags */}
         <div className="flex flex-wrap items-center gap-2 mb-4 pr-10">

@@ -3,7 +3,6 @@
 ## Project: FeedbackPulse (Feedback Board SaaS)
 - **Primary Language of Code & UI:** English
 - **Communication with User:** Russian
-- **Target Grade:** "A" (Project Week Guide)
 
 ## Mandatory UI/UX Reference Sources
 Whenever you work on UI, components, styling, animations, or UX flows, you **MUST ALWAYS** inspect ready-made solutions from these 8 sources before writing code:

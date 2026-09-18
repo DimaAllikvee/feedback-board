@@ -10,7 +10,8 @@ import {
   RunePin, 
   RuneChevronUp,
   RuneChevronDown,
-  RuneX
+  RuneX,
+  RuneLogOut
 } from './icons/RuneIcons';
 import { HometownLogo } from './icons/HometownLogo';
 import { Kbd } from './ui/Kbd';
@@ -186,7 +187,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         onClick={() => { onLogout(); setRoleMenuOpen(false); }}
                         className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
                       >
-                        <RuneX size={14} />
+                        <RuneLogOut size={14} />
                         <span>Log Out</span>
                       </motion.button>
                     </motion.div>

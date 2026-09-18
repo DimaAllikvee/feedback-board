@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import * as Rune from './icons/RuneIcons';
 import { 
   RuneX, 
   RunePlus, 
@@ -32,7 +33,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
   onClose,
   onTriggerToast,
 }) => {
-  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'primitives' | 'badges' | 'interactive' | 'forms'>('primitives');
+  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'primitives' | 'badges' | 'interactive' | 'forms' | 'icons'>('primitives');
   const [demoVotes, setDemoVotes] = useState(42);
   const [demoHasVoted, setDemoHasVoted] = useState(false);
   const [demoPassword, setDemoPassword] = useState('supersecret');
@@ -95,6 +96,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
             { id: 'badges' as const, label: 'Badges & Statuses' },
             { id: 'forms' as const, label: 'Inputs & Form Controls' },
             { id: 'interactive' as const, label: 'Reactions & Toasts' },
+            { id: 'icons' as const, label: 'Icons & System Glyphs' },
           ].map((tab) => {
             const isActive = activeShowcaseTab === tab.id;
             return (
@@ -395,6 +397,127 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* ICONS & SYSTEM GLYPHS TAB */}
+          {activeShowcaseTab === 'icons' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
+                  Pixel-Perfect Geometric SVG Icons (Lucide & Simple Icons)
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  Calibrated 24x24 stroke vectors with concentric alignment and no raster artifacts.
+                </p>
+              </div>
+
+              {[
+                {
+                  group: 'Navigation & Structure',
+                  icons: [
+                    { name: 'RuneKanban', icon: Rune.RuneKanban },
+                    { name: 'RuneList', icon: Rune.RuneList },
+                    { name: 'RuneSearch', icon: Rune.RuneSearch },
+                    { name: 'RuneFilter', icon: Rune.RuneFilter },
+                    { name: 'RuneArrowUpDown', icon: Rune.RuneArrowUpDown },
+                    { name: 'RuneLayers', icon: Rune.RuneLayers },
+                    { name: 'RuneChevronUp', icon: Rune.RuneChevronUp },
+                    { name: 'RuneChevronDown', icon: Rune.RuneChevronDown },
+                    { name: 'RuneArrowRight', icon: Rune.RuneArrowRight },
+                  ],
+                },
+                {
+                  group: 'Actions & Utilities',
+                  icons: [
+                    { name: 'RunePlus', icon: Rune.RunePlus },
+                    { name: 'RuneCheck', icon: Rune.RuneCheck },
+                    { name: 'RuneCheckCheck', icon: Rune.RuneCheckCheck },
+                    { name: 'RuneCircleCheck', icon: Rune.RuneCircleCheck },
+                    { name: 'RuneCopy', icon: Rune.RuneCopy },
+                    { name: 'RuneEdit', icon: Rune.RuneEdit },
+                    { name: 'RuneTrash', icon: Rune.RuneTrash },
+                    { name: 'RuneSend', icon: Rune.RuneSend },
+                    { name: 'RuneRotateCcw', icon: Rune.RuneRotateCcw },
+                    { name: 'RuneInbox', icon: Rune.RuneInbox },
+                    { name: 'RuneX', icon: Rune.RuneX },
+                    { name: 'RuneGripVertical', icon: Rune.RuneGripVertical },
+                  ],
+                },
+                {
+                  group: 'Categories & Topics',
+                  icons: [
+                    { name: 'RuneCode (Feature)', icon: Rune.RuneCode },
+                    { name: 'RuneZap (Improvement)', icon: Rune.RuneZap },
+                    { name: 'RuneBug (Bug Report)', icon: Rune.RuneBug },
+                    { name: 'RunePlug (Integration)', icon: Rune.RunePlug },
+                    { name: 'RunePalette (UI / UX)', icon: Rune.RunePalette },
+                  ],
+                },
+                {
+                  group: 'Statuses & Reactions',
+                  icons: [
+                    { name: 'RuneClock', icon: Rune.RuneClock },
+                    { name: 'RuneCompass', icon: Rune.RuneCompass },
+                    { name: 'RuneSparkles', icon: Rune.RuneSparkles },
+                    { name: 'RuneFlame', icon: Rune.RuneFlame },
+                    { name: 'RuneThumbsUp', icon: Rune.RuneThumbsUp },
+                    { name: 'RuneHeart', icon: Rune.RuneHeart },
+                    { name: 'RuneLightbulb', icon: Rune.RuneLightbulb },
+                    { name: 'RuneBookmark', icon: Rune.RuneBookmark },
+                    { name: 'RuneAlertTriangle', icon: Rune.RuneAlertTriangle },
+                  ],
+                },
+                {
+                  group: 'Security & Auth',
+                  icons: [
+                    { name: 'RuneUser', icon: Rune.RuneUser },
+                    { name: 'RuneCrown', icon: Rune.RuneCrown },
+                    { name: 'RuneShield', icon: Rune.RuneShield },
+                    { name: 'RuneShieldCheck', icon: Rune.RuneShieldCheck },
+                    { name: 'RuneLock', icon: Rune.RuneLock },
+                    { name: 'RuneLogOut', icon: Rune.RuneLogOut },
+                    { name: 'RuneEye', icon: Rune.RuneEye },
+                    { name: 'RuneEyeOff', icon: Rune.RuneEyeOff },
+                  ],
+                },
+                {
+                  group: 'Developer & Official Brands',
+                  icons: [
+                    { name: 'RuneTerminal', icon: Rune.RuneTerminal },
+                    { name: 'RuneBookOpen', icon: Rune.RuneBookOpen },
+                    { name: 'RuneGithub', icon: Rune.RuneGithub },
+                    { name: 'RuneGoogle', icon: Rune.RuneGoogle },
+                    { name: 'RuneDiscord', icon: Rune.RuneDiscord },
+                    { name: 'RuneXTwitter', icon: Rune.RuneXTwitter },
+                    { name: 'RuneSlack', icon: Rune.RuneSlack },
+                  ],
+                },
+              ].map((section) => (
+                <div key={section.group} className="space-y-2.5">
+                  <h4 className="text-[11px] font-semibold text-zinc-300 uppercase tracking-wider">
+                    {section.group}
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                    {section.icons.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <div
+                          key={item.name}
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition-colors"
+                        >
+                          <div className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-200 shrink-0">
+                            <Icon size={16} />
+                          </div>
+                          <span className="text-[11px] font-mono text-zinc-300 truncate">
+                            {item.name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

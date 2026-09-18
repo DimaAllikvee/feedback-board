@@ -6,7 +6,12 @@ import {
   RuneSparkles, 
   RuneX, 
   RuneEdit, 
-  RuneEye 
+  RuneEye,
+  RuneCode,
+  RuneZap,
+  RuneBug,
+  RunePlug,
+  RunePalette
 } from './icons/RuneIcons';
 
 interface NewPostModalProps {
@@ -26,12 +31,12 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
   const [isPreview, setIsPreview] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
 
-  const categories: { id: PostCategory; label: string }[] = [
-    { id: 'feature', label: 'Feature' },
-    { id: 'improvement', label: 'Improvement' },
-    { id: 'bug', label: 'Bug Report' },
-    { id: 'integration', label: 'Integration' },
-    { id: 'ui-ux', label: 'UI / UX' },
+  const categories: { id: PostCategory; label: string; icon: React.ComponentType<{ size?: number | string; className?: string }> }[] = [
+    { id: 'feature', label: 'Feature', icon: RuneCode },
+    { id: 'improvement', label: 'Improvement', icon: RuneZap },
+    { id: 'bug', label: 'Bug Report', icon: RuneBug },
+    { id: 'integration', label: 'Integration', icon: RunePlug },
+    { id: 'ui-ux', label: 'UI / UX', icon: RunePalette },
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -134,20 +139,25 @@ export const NewPostModal: React.FC<NewPostModalProps> = ({
                 Category
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setCategory(cat.id)}
-                    className={`px-3 py-2 rounded-xl text-xs font-medium border text-left transition-all cursor-pointer ${
-                      category === cat.id
-                        ? 'bg-zinc-800 text-zinc-100 border-zinc-600 shadow-sm'
-                        : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:bg-zinc-800/60 hover:text-zinc-200'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
+                {categories.map((cat) => {
+                  const Icon = cat.icon;
+                  const isSelected = category === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setCategory(cat.id)}
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium border text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-zinc-800 text-zinc-100 border-zinc-600 shadow-sm ring-1 ring-zinc-700/50'
+                          : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:bg-zinc-800/60 hover:text-zinc-200'
+                      }`}
+                    >
+                      <Icon size={14} className={isSelected ? 'text-zinc-100' : 'text-zinc-500'} />
+                      <span className="truncate">{cat.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

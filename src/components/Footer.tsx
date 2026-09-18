@@ -2,10 +2,11 @@ import React from 'react';
 import { HometownLogo } from './icons/HometownLogo';
 import { 
   RuneGithub, 
-  RuneLock, 
   RuneSparkles, 
-  RuneCode,
-  RuneCrown
+  RuneTerminal,
+  RuneCrown,
+  RuneShieldCheck,
+  RuneDiscord
 } from './icons/RuneIcons';
 import { LegalModalTab } from './LegalModal';
 import { ActiveTab } from '../types';
@@ -125,12 +126,23 @@ export const Footer: React.FC<FooterProps> = ({
             <button
               type="button"
               onClick={() => onOpenLegal('api')}
-              aria-label="REST API"
-              title="REST API Endpoints"
+              aria-label="REST API & Developer Docs"
+              title="REST API Endpoints & Docs"
               className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent hover:border-zinc-800 transition-colors cursor-pointer"
             >
-              <RuneCode size={14} />
+              <RuneTerminal size={14} />
             </button>
+
+            <a
+              href="https://discord.gg"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Discord Community"
+              title="Join Discord Community"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-[#5865F2] hover:bg-zinc-900 border border-transparent hover:border-zinc-800 transition-colors"
+            >
+              <RuneDiscord size={14} />
+            </a>
 
             <a
               href="https://github.com/DimaAllikvee/feedback-board"
@@ -147,9 +159,9 @@ export const Footer: React.FC<FooterProps> = ({
 
             <div 
               title="Stripe PCI-DSS Certified Checkout"
-              className="inline-flex items-center gap-1 text-[11px] text-zinc-500 hover:text-zinc-400 cursor-default"
+              className="inline-flex items-center gap-1.5 text-[11px] text-zinc-400 hover:text-zinc-300 cursor-default"
             >
-              <RuneLock size={11} />
+              <RuneShieldCheck size={13} className="text-emerald-400" />
               <span>Stripe</span>
             </div>
           </div>
