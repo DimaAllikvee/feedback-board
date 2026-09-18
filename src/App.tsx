@@ -753,6 +753,7 @@ export const App: React.FC = () => {
                       onVote={handleVote}
                       onSelectPost={setSelectedPost}
                       onUpdateStatus={handleUpdateStatus}
+                      onOpenNewPost={() => setIsNewPostOpen(true)}
                       isPro={Boolean(currentUser?.is_pro)}
                     />
                   ) : (

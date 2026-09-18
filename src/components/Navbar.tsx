@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   placeholder="Search proposals, topics, or milestones..."
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
-                  className="w-full bg-zinc-900/80 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-all"
+                  className="w-full bg-zinc-900/80 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 pl-10 pr-16 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600/40 no-focus-ring transition-all"
                 />
                 <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {searchQuery ? (
@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   whileTap={{ scale: 0.96 }}
                   type="button"
                   onClick={onOpenStripeModal}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-[background-color,border-color,color] duration-100 cursor-pointer select-none"
+                  className="inline-flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 bg-zinc-900 border border-zinc-800 hover:border-zinc-700 hover:text-white transition-[background-color,border-color,color] duration-100 cursor-pointer select-none"
                   title="Supporter Membership (Stripe Billing)"
                 >
                   <RuneCrown size={14} className="text-zinc-400 shrink-0" />
@@ -127,7 +127,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   whileTap={{ scale: 0.96 }}
                   type="button"
                   onClick={onOpenNewPost}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white transition-[background-color,transform] duration-100 cursor-pointer shadow-sm select-none"
+                  className="inline-flex items-center gap-1.5 pl-2.5 pr-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-950 bg-zinc-100 hover:bg-white transition-[background-color,transform] duration-100 cursor-pointer shadow-sm select-none"
                 >
                   <RunePlus size={14} className="shrink-0" />
                   <span>New Idea</span>
@@ -142,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   whileTap={{ scale: 0.96 }}
                   type="button"
                   onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 pl-2.5 pr-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs transition-[border-color,background-color] duration-100 cursor-pointer select-none"
+                  className="flex items-center gap-2 p-1.5 pl-2 pr-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs transition-[border-color,background-color] duration-100 cursor-pointer select-none"
                 >
                   <UserAvatar name={currentUser.name} size="xs" />
                   <div className="hidden lg:block text-left leading-tight">
@@ -169,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95, y: -4 }}
                       transition={{ duration: 0.14, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-zinc-900 border border-zinc-800 p-2 shadow-2xl backdrop-blur-2xl z-50 text-xs"
+                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-zinc-900 border border-zinc-800 p-2 shadow-2xl backdrop-blur-2xl z-50 text-xs origin-top-right"
                       onMouseLeave={() => setRoleMenuOpen(false)}
                     >
                       <div className="px-3 py-2 border-b border-zinc-800 mb-1">
