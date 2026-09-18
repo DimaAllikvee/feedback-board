@@ -17,6 +17,13 @@ Whenever you work on UI, components, styling, animations, or UX flows, you **MUS
 7. **[keenthemes/reui (reui.io)](https://github.com/keenthemes/reui)** — High-level SaaS blocks, Kanban boards, and data layouts.
 8. **[Nexvyn/runeicons](https://github.com/Nexvyn/runeicons)** — Mandatory icon library for all SVG icons.
 9. **[jakubkrehel/skills (interfaces.dev)](https://github.com/jakubkrehel/skills)** — UI engineering & polish guidelines (installed in `.agents/skills/`: `better-ui`, `better-typography`, `better-colors`, `better-interface`, etc.).
+10. **[21st.dev](https://21st.dev)** — 1,000+ community-built UI components (Tailwind + Framer Motion components).
+11. **[aicss.dev](https://aicss.dev)** — UI blocks for AI agent interactions.
+12. **[ui.halaska.com](https://ui.halaska.com)** — Components for AI products.
+13. **[vibeprompts.dev](https://vibeprompts.dev)** — 286 components with ready-to-use prompts.
+14. **[styles.refero.design](https://styles.refero.design)** — High-quality design.md examples.
+15. **[agent-memory.dev](https://agent-memory.dev)** — Persistent memory for coding agents.
+16. **[kage.design](https://kage.design)** — Real product UI you can copy directly as an AI prompt or MCP.
 
 **Rule:** Do not create UI from scratch. Inspect the repositories, adapt existing verified components, and integrate them smoothly.
 

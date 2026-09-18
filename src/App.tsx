@@ -770,7 +770,7 @@ export const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Production SaaS Footer */}
+      {/* Minimal Production SaaS Footer (21st.dev / Linear style) */}
       <Footer
         onNavigateTab={(tab) => {
           setActiveTab(tab);
@@ -778,9 +778,7 @@ export const App: React.FC = () => {
         }}
         onOpenShowcase={() => setIsShowcaseOpen(true)}
         onOpenStripe={() => setIsStripeModalOpen(true)}
-        onOpenNewPost={() => setIsNewPostOpen(true)}
         onOpenLegal={(tab) => setLegalModalTab(tab)}
-        onTriggerToast={(msg, type) => addToast(msg, undefined, type)}
       />
 
       {/* Toast Notification Stack */}
