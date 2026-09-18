@@ -18,6 +18,8 @@ import { UpvoteButton } from './UpvoteButton';
 import { UserAvatar } from './ui/UserAvatar';
 import { ReactionPill } from './ui/ReactionPill';
 import { PasswordToggle } from './ui/PasswordToggle';
+import { GooeyTooltip } from './ui/GooeyTooltip';
+import { Plus, Upload, FolderGit2, Copy, Check, Heart } from 'lucide-react';
 import { PostStatus, PostCategory } from '../types';
 
 import { ToastMessage } from './ui/Toast';
@@ -33,11 +35,14 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
   onClose,
   onTriggerToast,
 }) => {
-  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'primitives' | 'badges' | 'interactive' | 'forms' | 'icons'>('primitives');
+  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'primitives' | 'badges' | 'interactive' | 'forms' | 'gooey' | 'icons'>('primitives');
   const [demoVotes, setDemoVotes] = useState(42);
   const [demoHasVoted, setDemoHasVoted] = useState(false);
   const [demoPassword, setDemoPassword] = useState('supersecret');
   const [showDemoPassword, setShowDemoPassword] = useState(false);
+  const [gooeyPreset, setGooeyPreset] = useState<'original' | 'saas' | 'social'>('original');
+  const [gooeyCanvasTheme, setGooeyCanvasTheme] = useState<'light' | 'dark'>('light');
+  const [hasCopiedCode, setHasCopiedCode] = useState(false);
 
   if (!isOpen) return null;
 
@@ -96,6 +101,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
             { id: 'badges' as const, label: 'Badges & Statuses' },
             { id: 'forms' as const, label: 'Inputs & Form Controls' },
             { id: 'interactive' as const, label: 'Reactions & Toasts' },
+            { id: 'gooey' as const, label: 'Liquid Gooey Motion' },
             { id: 'icons' as const, label: 'Icons & System Glyphs' },
           ].map((tab) => {
             const isActive = activeShowcaseTab === tab.id;
@@ -395,6 +401,264 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                     <UserAvatar name="Marcus Chen" size="md" />
                     <span className="text-xs text-zinc-400">md (36px)</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* LIQUID GOOEY MOTION TAB */}
+          {activeShowcaseTab === 'gooey' && (
+            <div className="space-y-6">
+              {/* Header & Badges */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-zinc-100">
+                      Liquid Gooey Tooltip Engine
+                    </h3>
+                    <span className="px-2 py-0.5 text-[10px] font-mono rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/40">
+                      1:1 Original Port
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Authentic recreation of Hitesh Suthar's gooey-tooltip with SVG feColorMatrix thresholding & dual-phase spring transitions.
+                  </p>
+                </div>
+
+                {/* Preset & Canvas Controls */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center p-0.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setGooeyCanvasTheme('light')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        gooeyCanvasTheme === 'light'
+                          ? 'bg-zinc-800 text-zinc-100 font-medium shadow-sm'
+                          : 'text-zinc-400 hover:text-zinc-200'
+                      }`}
+                    >
+                      Light Canvas
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGooeyCanvasTheme('dark')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        gooeyCanvasTheme === 'dark'
+                          ? 'bg-zinc-800 text-zinc-100 font-medium shadow-sm'
+                          : 'text-zinc-400 hover:text-zinc-200'
+                      }`}
+                    >
+                      Dark Canvas
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preset Selector */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-zinc-500 mr-1">Presets:</span>
+                {[
+                  { id: 'original' as const, label: 'Original (hiteshdevcom)' },
+                  { id: 'saas' as const, label: 'FeedbackPulse SaaS Dock' },
+                  { id: 'social' as const, label: 'Social & Discussion' },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setGooeyPreset(p.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs transition-all cursor-pointer ${
+                      gooeyPreset === p.id
+                        ? 'bg-zinc-200 text-zinc-900 font-semibold shadow-sm'
+                        : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Interactive Stage Canvas */}
+              <div
+                className={`w-full relative rounded-2xl border transition-colors p-2 ${
+                  gooeyCanvasTheme === 'light'
+                    ? 'bg-neutral-50 border-neutral-200'
+                    : 'bg-zinc-950 border-zinc-800'
+                }`}
+              >
+                <div
+                  className={`w-full min-h-[200px] rounded-xl border flex flex-col items-center justify-center p-8 transition-colors ${
+                    gooeyCanvasTheme === 'light'
+                      ? 'bg-white border-neutral-200/80 shadow-inner'
+                      : 'bg-zinc-900/30 border-zinc-800/80'
+                  }`}
+                >
+                  <GooeyTooltip
+                    items={
+                      gooeyPreset === 'original'
+                        ? [
+                            {
+                              icon: Plus,
+                              tooltip: 'Add to cart',
+                              onClick: () => onTriggerToast('E-Commerce', 'Added to cart with liquid feedback', 'success'),
+                            },
+                            {
+                              label: 'Share',
+                              icon: Upload,
+                              tooltip: 'Copy link',
+                              onClick: () => onTriggerToast('Share Link', 'Link copied to clipboard', 'info'),
+                            },
+                            {
+                              label: 'Projects',
+                              icon: FolderGit2,
+                              tooltip: 'View Latest',
+                              onClick: () => onTriggerToast('Navigation', 'Navigating to projects', 'info'),
+                            },
+                          ]
+                        : gooeyPreset === 'saas'
+                        ? [
+                            {
+                              label: 'Idea',
+                              icon: RunePlus,
+                              tooltip: 'Submit Proposal',
+                              onClick: () => onTriggerToast('New Post', 'Proposal modal opened', 'info'),
+                            },
+                            {
+                              label: 'Roadmap',
+                              icon: Rune.RuneKanban,
+                              tooltip: 'Kanban Board',
+                              onClick: () => onTriggerToast('Roadmap', 'Switched to Kanban roadmap view', 'info'),
+                            },
+                            {
+                              label: 'Pro',
+                              icon: RuneCrown,
+                              tooltip: 'Supporter Perks',
+                              onClick: () => onTriggerToast('Stripe', 'Supporter modal opened', 'admin'),
+                            },
+                            {
+                              icon: RuneSearch,
+                              tooltip: 'Instant Search',
+                              onClick: () => onTriggerToast('Search', 'Opening search (⌘K)', 'info'),
+                            },
+                          ]
+                        : [
+                            {
+                              icon: Heart,
+                              tooltip: 'Applaud Proposal',
+                              onClick: () => onTriggerToast('Upvote', '+1 Praise recorded', 'success'),
+                            },
+                            {
+                              label: 'Discuss',
+                              icon: RuneMessageSquare,
+                              tooltip: 'Open Thread',
+                              onClick: () => onTriggerToast('Comments', 'Discussion thread opened', 'info'),
+                            },
+                            {
+                              icon: RunePin,
+                              tooltip: 'Pin Milestone',
+                              onClick: () => onTriggerToast('Moderation', 'Proposal pinned to board', 'admin'),
+                            },
+                          ]
+                    }
+                    buttonClassName="bg-neutral-900 hover:bg-neutral-800 text-white"
+                    tooltipClassName="bg-neutral-900 text-white"
+                    tooltipTop={-45}
+                    filterId="showcase-modal-gooey"
+                  />
+
+                  <p className="text-[11px] text-zinc-400 mt-6 text-center">
+                    Hover across the buttons to experience liquid neck detachment, horizontal glide, and fluid collapse.
+                  </p>
+                </div>
+              </div>
+
+              {/* Technical Mechanics Specs */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    Alpha Threshold Clamp
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                    values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -10"
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    Multiplies alpha by 20 and offsets by -10. Turns blurry gaussian falloff into an ultra-crisp liquid meniscus.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400" />
+                    Composite operator="atop"
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                    &lt;feComposite in="SourceGraphic" in2="goo" operator="atop" /&gt;
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    Ensures labels, icons, and text inside the buttons stay 100% sharp without distortion.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    Dual-Phase Springs
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                    POP: bounce 0.22, 0.7s<br />
+                    MOVE: bounce 0.20, 0.2s
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    Fresh detachment uses a bouncier spring; continuous sliding between items is fast & snappy.
+                  </p>
+                </div>
+              </div>
+
+              {/* Code Snippet Box */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-semibold text-zinc-300">Implementation Code</h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(
+                        `import { motion } from "framer-motion";\nimport { useState, useRef } from "react";\n\n// See src/components/ui/GooeyTooltip.tsx for full source`
+                      );
+                      setHasCopiedCode(true);
+                      setTimeout(() => setHasCopiedCode(false), 2000);
+                      onTriggerToast('Code Copied', 'GooeyTooltip snippet copied to clipboard', 'info');
+                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium border border-zinc-800 transition-colors cursor-pointer"
+                  >
+                    {hasCopiedCode ? (
+                      <>
+                        <Check size={13} className="text-emerald-400" />
+                        <span className="text-emerald-400">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} />
+                        <span>Copy Code</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 font-mono text-xs text-zinc-300 overflow-x-auto leading-relaxed">
+                  <pre>{`// SVG Filter definition
+<svg className="absolute w-0 h-0 pointer-events-none opacity-0" aria-hidden="true">
+  <defs>
+    <filter width="200%" height="200%" id="gooey-filter" x="-50%" y="-50%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo" />
+      <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+    </filter>
+  </defs>
+</svg>
+
+// Spring Transitions
+const POP_TRANSITION = { duration: 0.7, type: "spring", bounce: 0.22 };
+const MOVE_TRANSITION = { duration: 0.2, type: "spring", bounce: 0.2 };`}</pre>
                 </div>
               </div>
             </div>

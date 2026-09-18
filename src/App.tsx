@@ -24,6 +24,7 @@ import { AuthModal } from './components/AuthModal';
 import { AuthGate } from './components/AuthGate';
 import { ShowcaseModal } from './components/ShowcaseModal';
 import { ToastStack, ToastMessage } from './components/ui/Toast';
+import { GooeyDock } from './components/ui/GooeyDock';
 import { Footer } from './components/Footer';
 import { LegalModal, LegalModalTab } from './components/LegalModal';
 
@@ -770,6 +771,22 @@ export const App: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Quick Action Dock with Liquid Gooey Physics (hiteshdevcom port) */}
+      <GooeyDock
+        activeTab={activeTab}
+        onSelectTab={(tab) => {
+          setActiveTab(tab);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenNewPost={() => setIsNewPostOpen(true)}
+        onOpenSearch={() => {
+          searchInputRef.current?.focus();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenShowcase={() => setIsShowcaseOpen(true)}
+        onOpenStripe={() => setIsStripeModalOpen(true)}
+      />
 
       {/* Minimal Production SaaS Footer (21st.dev / Linear style) */}
       <Footer
