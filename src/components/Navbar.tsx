@@ -29,6 +29,8 @@ interface NavbarProps {
   onOpenStripeModal: () => void;
   onOpenAuthModal: () => void;
   onLogout: () => void;
+  isLightTheme: boolean;
+  onToggleTheme: () => void;
   searchInputRef?: React.RefObject<HTMLInputElement>;
 }
 
@@ -42,6 +44,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenStripeModal,
   onOpenAuthModal,
   onLogout,
+  isLightTheme,
+  onToggleTheme,
   searchInputRef,
 }) => {
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
@@ -133,6 +137,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </motion.button>
               </>
             )}
+
+            {/* Theme switch */}
+            <motion.button
+              whileTap={{ scale: 0.94 }}
+              type="button"
+              onClick={onToggleTheme}
+              aria-label={isLightTheme ? 'Switch to dark theme' : 'Switch to bright theme'}
+              title={isLightTheme ? 'Switch to dark theme' : 'Switch to bright theme'}
+              className="theme-toggle inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors duration-100 cursor-pointer select-none"
+            >
+              <span aria-hidden="true">{isLightTheme ? '☾' : '☀'}</span>
+              <span className="hidden sm:inline">{isLightTheme ? 'Dark' : 'Bright'}</span>
+            </motion.button>
 
             {/* Auth Profile or Sign In Button */}
             {currentUser ? (

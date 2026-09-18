@@ -46,7 +46,16 @@ export const App: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [activeTab, setActiveTab] = useState<ActiveTab>('roadmap');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLightTheme, setIsLightTheme] = useState(() => {
+    try { return window.localStorage.getItem('feedback-board-theme') === 'light'; }
+    catch { return false; }
+  });
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  useEffect(() => {
+    try { window.localStorage.setItem('feedback-board-theme', isLightTheme ? 'light' : 'dark'); }
+    catch { /* Theme switching still works when browser storage is unavailable. */ }
+  }, [isLightTheme]);
   
   // Modals
   const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
@@ -649,7 +658,7 @@ export const App: React.FC = () => {
   const completedCount = posts.filter((p) => p.status === 'completed').length;
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-zinc-100 flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className={`min-h-screen text-zinc-100 flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200 ${isLightTheme ? 'theme-light' : 'bg-[#090a0f]'}`}>
       
       {/* Top Navigation */}
       <Navbar
@@ -662,6 +671,8 @@ export const App: React.FC = () => {
         onOpenStripeModal={handleOpenStripeModal}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
+        isLightTheme={isLightTheme}
+        onToggleTheme={() => setIsLightTheme((current) => !current)}
         searchInputRef={searchInputRef}
       />
 
