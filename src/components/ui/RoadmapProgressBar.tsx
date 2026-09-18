@@ -1,4 +1,5 @@
 import React from 'react';
+import { TextMorph } from 'torph/react';
 import { FeedbackPost } from '../../types';
 
 interface RoadmapProgressBarProps {
@@ -26,7 +27,10 @@ export const RoadmapProgressBar: React.FC<RoadmapProgressBarProps> = ({ posts })
       <div className="flex items-center justify-between text-xs mb-2">
         <span className="font-semibold text-zinc-300">Overall Roadmap Velocity</span>
         <span className="text-[11px] text-zinc-400">
-          <strong className="text-emerald-400">{pctCompleted}%</strong> Shipped to Production
+          <strong className="text-emerald-400 font-mono font-bold">
+            <TextMorph as="span" numbers>{pctCompleted}</TextMorph>%
+          </strong>{' '}
+          Shipped to Production
         </span>
       </div>
 

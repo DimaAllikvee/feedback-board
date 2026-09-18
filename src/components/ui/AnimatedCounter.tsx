@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { TextMorph } from 'torph/react';
 
 interface AnimatedCounterProps {
   value: number;
@@ -6,31 +7,18 @@ interface AnimatedCounterProps {
 }
 
 /**
- * AnimatedCounter inspired by number-flow.barvian.me & emilkowal.ski
- * Smooth tactile rolling number animation.
+ * AnimatedCounter powered by torph/react (TextMorph)
+ * Dependency-free place-value numeric rolling morph.
  */
 export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ value, className = '' }) => {
-  const [prevValue, setPrevValue] = useState(value);
-  const [animate, setAnimate] = useState(false);
-
-  useEffect(() => {
-    if (value !== prevValue) {
-      setAnimate(true);
-      const timer = setTimeout(() => {
-        setAnimate(false);
-        setPrevValue(value);
-      }, 250);
-      return () => clearTimeout(timer);
-    }
-  }, [value, prevValue]);
-
   return (
-    <span
-      className={`inline-block font-bold tracking-tight transition-all duration-200 ${
-        animate ? 'transform -translate-y-0.5 scale-110 text-indigo-400' : 'transform translate-y-0 scale-100'
-      } ${className}`}
+    <TextMorph
+      as="span"
+      numbers
+      ease={{ stiffness: 220, damping: 22 }}
+      className={`inline-block font-bold tracking-tight ${className}`}
     >
       {value}
-    </span>
+    </TextMorph>
   );
 };

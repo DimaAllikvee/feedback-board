@@ -23,6 +23,7 @@ import { Plus, Upload, FolderGit2, Copy, Check, Heart } from 'lucide-react';
 import { PostStatus, PostCategory } from '../types';
 
 import { ToastMessage } from './ui/Toast';
+import { TextMorph } from 'torph/react';
 
 interface ShowcaseModalProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
   onClose,
   onTriggerToast,
 }) => {
-  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'primitives' | 'badges' | 'interactive' | 'forms' | 'gooey' | 'icons'>('primitives');
+  const [activeShowcaseTab, setActiveShowcaseTab] = useState<'primitives' | 'badges' | 'forms' | 'interactive' | 'textmorph' | 'gooey' | 'icons'>('primitives');
   const [demoVotes, setDemoVotes] = useState(42);
   const [demoHasVoted, setDemoHasVoted] = useState(false);
   const [demoPassword, setDemoPassword] = useState('supersecret');
@@ -43,6 +44,12 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
   const [gooeyPreset, setGooeyPreset] = useState<'original' | 'saas' | 'social'>('original');
   const [gooeyCanvasTheme, setGooeyCanvasTheme] = useState<'light' | 'dark'>('light');
   const [hasCopiedCode, setHasCopiedCode] = useState(false);
+
+  // TextMorph showcase state
+  const [morphStatusIdx, setMorphStatusIdx] = useState(0);
+  const [morphNumber, setMorphNumber] = useState(1240);
+  const [morphButtonState, setMorphButtonState] = useState<'idle' | 'copied' | 'ready'>('idle');
+  const [morphCustomText, setMorphCustomText] = useState('FeedbackPulse v2.0');
 
   if (!isOpen) return null;
 
@@ -99,6 +106,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
           {[
             { id: 'primitives' as const, label: 'Buttons & Upvotes' },
             { id: 'badges' as const, label: 'Badges & Statuses' },
+            { id: 'textmorph' as const, label: 'TextMorph Dynamics' },
             { id: 'forms' as const, label: 'Inputs & Form Controls' },
             { id: 'interactive' as const, label: 'Reactions & Toasts' },
             { id: 'gooey' as const, label: 'Liquid Gooey Motion' },
@@ -401,6 +409,255 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                     <UserAvatar name="Marcus Chen" size="md" />
                     <span className="text-xs text-zinc-400">md (36px)</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TEXTMORPH DYNAMICS TAB */}
+          {activeShowcaseTab === 'textmorph' && (
+            <div className="space-y-6">
+              {/* Header & Badges */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-zinc-100">
+                      TextMorph Motion Engine
+                    </h3>
+                    <span className="px-2 py-0.5 text-[10px] font-mono rounded-full bg-cyan-950/60 text-cyan-400 border border-cyan-800/40">
+                      torph v0.1.3 · 0 Deps
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Spring-driven character & numeric place-value morphing (by Lochie Axon). Replaces abrupt layout jumps with fluid character interpolation.
+                  </p>
+                </div>
+              </div>
+
+              {/* Grid with Interactive Demos */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 1. Status Label Transitions */}
+                <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-zinc-300">1. Roadmap Status Morph</span>
+                      <span className="text-[10px] font-mono text-zinc-500">Live StatusBadge</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mb-4">
+                      When posts change status on the Kanban board or detail modal, individual characters morph smoothly in place.
+                    </p>
+                    <div className="flex items-center justify-center p-6 rounded-xl bg-zinc-950/60 border border-zinc-800/60 min-h-[90px]">
+                      <StatusBadge
+                        status={
+                          (['under_review', 'planned', 'in_progress', 'completed', 'closed'] as PostStatus[])[
+                            morphStatusIdx % 5
+                          ]
+                        }
+                        size="md"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setMorphStatusIdx((i) => (i + 1) % 5)}
+                    className="w-full py-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Rune.RuneRotateCcw size={13} />
+                    <span>Next Roadmap Status</span>
+                  </button>
+                </div>
+
+                {/* 2. Numeric Place-Value Sliding */}
+                <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-zinc-300">2. Numeric Place-Value Sliding</span>
+                      <span className="text-[10px] font-mono text-zinc-500">numbers=&#123;true&#125;</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mb-4">
+                      Digits match by place value (ones to ones, tens to tens) so counter transitions never distort layout.
+                    </p>
+                    <div className="flex items-center justify-center p-6 rounded-xl bg-zinc-950/60 border border-zinc-800/60 min-h-[90px]">
+                      <div className="text-3xl font-extrabold text-zinc-100 font-mono tracking-tight">
+                        $<TextMorph as="span" numbers ease={{ stiffness: 220, damping: 22 }}>
+                          {morphNumber}
+                        </TextMorph>
+                        <span className="text-xs font-normal text-zinc-400 ml-1">/mo ARR</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMorphNumber((n) => n + 1)}
+                      className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition-colors cursor-pointer"
+                    >
+                      +1
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMorphNumber((n) => n + 50)}
+                      className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition-colors cursor-pointer"
+                    >
+                      +50
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMorphNumber((n) => Math.max(10, n - 25))}
+                      className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition-colors cursor-pointer"
+                    >
+                      -25
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMorphNumber(Math.floor(Math.random() * 9000 + 1000))}
+                      className="flex-1 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition-colors cursor-pointer"
+                    >
+                      Random
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Action Button Label Feedback */}
+                <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-zinc-300">3. Button State Feedback</span>
+                      <span className="text-[10px] font-mono text-zinc-500">Zero Lag</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mb-4">
+                      Replaces flash-of-content button state changes with seamless letter morphing.
+                    </p>
+                    <div className="flex items-center justify-center p-6 rounded-xl bg-zinc-950/60 border border-zinc-800/60 min-h-[90px]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (morphButtonState === 'idle') {
+                            setMorphButtonState('copied');
+                            onTriggerToast('Link Copied', 'Share URL copied to clipboard', 'info');
+                            setTimeout(() => setMorphButtonState('ready'), 2200);
+                            setTimeout(() => setMorphButtonState('idle'), 4500);
+                          }
+                        }}
+                        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer shadow-sm ${
+                          morphButtonState === 'copied'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                            : morphButtonState === 'ready'
+                            ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
+                            : 'bg-zinc-100 text-zinc-950 hover:bg-white border border-transparent'
+                        }`}
+                      >
+                        {morphButtonState === 'copied' ? (
+                          <Check size={14} className="text-emerald-400 shrink-0" />
+                        ) : morphButtonState === 'ready' ? (
+                          <Rune.RuneShare size={14} className="text-blue-400 shrink-0" />
+                        ) : (
+                          <Copy size={14} className="text-zinc-950 shrink-0" />
+                        )}
+                        <TextMorph as="span" ease={{ stiffness: 260, damping: 24 }}>
+                          {morphButtonState === 'copied'
+                            ? 'Copied to Clipboard!'
+                            : morphButtonState === 'ready'
+                            ? 'Ready for Sharing'
+                            : 'Copy Shareable Link'}
+                        </TextMorph>
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-zinc-500 text-center">
+                    Click the button above to observe the smooth letter morphing and color transition.
+                  </p>
+                </div>
+
+                {/* 4. Live Custom Text Playground */}
+                <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col justify-between space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-zinc-300">4. Live Custom Playground</span>
+                      <span className="text-[10px] font-mono text-zinc-500">Interactive</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mb-2">
+                      Type anything or pick a preset to see characters rearrange dynamically:
+                    </p>
+                    <input
+                      type="text"
+                      value={morphCustomText}
+                      onChange={(e) => setMorphCustomText(e.target.value)}
+                      placeholder="Type custom text..."
+                      className="w-full bg-zinc-950 text-xs text-zinc-100 placeholder-zinc-500 px-3 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 mb-3"
+                    />
+                    <div className="flex items-center justify-center p-4 rounded-xl bg-zinc-950/60 border border-zinc-800/60 min-h-[70px]">
+                      <TextMorph
+                        as="div"
+                        ease={{ stiffness: 200, damping: 20 }}
+                        className="text-lg font-bold text-cyan-400 font-mono text-center tracking-tight"
+                      >
+                        {morphCustomText || 'Start typing above...'}
+                      </TextMorph>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {[
+                      'FeedbackPulse v2.0',
+                      'Fluid Micro-interactions',
+                      'Zero Dependency Springs',
+                      'Ship Features Faster',
+                    ].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setMorphCustomText(preset)}
+                        className="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[10px] font-mono border border-zinc-700/60 transition-colors cursor-pointer"
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Technical Specifications & Reference */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    Zero Dependencies
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                    npm i torph
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    0 external runtime dependencies. Pure CSS translate transforms and rAF spring physics.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-purple-400" />
+                    Place-Value Alignment
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                    numbers=&#123;true&#125;
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    Digits slide vertically according to place value (units, tens, hundreds) instead of simple character shifts.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200 mb-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Spring Physics
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed font-mono">
+                    stiffness: 220, damping: 22
+                  </p>
+                  <p className="text-[11px] text-zinc-500 mt-1">
+                    Emil Kowalski protocol compliance: snappy springs, zero lag, purposeful micro-feedback.
+                  </p>
                 </div>
               </div>
             </div>

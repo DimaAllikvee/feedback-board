@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { TextMorph } from 'torph/react';
 import { FeedbackPost, PostStatus, User } from '../types';
 import { UpvoteButton } from './UpvoteButton';
 import { CategoryBadge } from './StatusBadge';
@@ -226,7 +227,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="px-2 py-0.5 rounded-full text-xs font-mono font-medium tabular-nums bg-zinc-900 text-zinc-400 border border-zinc-800">
-                    {colPosts.length}
+                    <TextMorph as="span" numbers>{colPosts.length}</TextMorph>
                   </span>
                   {onOpenNewPost && (
                     <button
