@@ -9,8 +9,6 @@ import {
   RunePin, 
   RuneMail, 
   RuneLock, 
-  RuneEye, 
-  RuneEyeOff, 
   RuneMessageSquare
 } from './icons/RuneIcons';
 import { HometownLogo } from './icons/HometownLogo';
@@ -18,6 +16,7 @@ import { StatusBadge, CategoryBadge } from './StatusBadge';
 import { UpvoteButton } from './UpvoteButton';
 import { UserAvatar } from './ui/UserAvatar';
 import { ReactionPill } from './ui/ReactionPill';
+import { PasswordToggle } from './ui/PasswordToggle';
 import { PostStatus, PostCategory } from '../types';
 
 import { ToastMessage } from './ui/Toast';
@@ -299,13 +298,12 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                     onChange={(e) => setDemoPassword(e.target.value)}
                     className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 pl-10 pr-10 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 focus:border-zinc-500 transition-all"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowDemoPassword(!showDemoPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 p-1 cursor-pointer"
-                  >
-                    {showDemoPassword ? <RuneEyeOff size={15} /> : <RuneEye size={15} />}
-                  </button>
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+                    <PasswordToggle
+                      isVisible={showDemoPassword}
+                      onToggle={() => setShowDemoPassword(!showDemoPassword)}
+                    />
+                  </div>
                 </div>
               </div>
 

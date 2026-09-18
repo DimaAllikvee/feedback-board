@@ -7,9 +7,11 @@ import {
   RuneCheck,
   RuneAlertTriangle,
   RuneGithub,
-  RuneGoogle
+  RuneGoogle,
+  RuneLock
 } from './icons/RuneIcons';
 import { HometownLogo } from './icons/HometownLogo';
+import { PasswordToggle } from './ui/PasswordToggle';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -23,6 +25,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -341,17 +344,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full bg-zinc-900 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 px-3.5 py-2 rounded-xl border border-zinc-800 focus:outline-none focus:border-zinc-600 transition-colors"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-medium text-zinc-300">
+                Password
+              </label>
+              <span className="text-[10px] text-zinc-500">Min. 8 characters</span>
+            </div>
+            <div className="relative flex items-center">
+              <RuneLock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-zinc-900/80 text-xs text-zinc-100 placeholder-zinc-500 pl-10 pr-10 py-2.5 rounded-xl border border-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400/30 focus:border-zinc-500 transition-all"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+                <PasswordToggle
+                  isVisible={showPassword}
+                  onToggle={() => setShowPassword(!showPassword)}
+                />
+              </div>
+            </div>
           </div>
 
           <button
