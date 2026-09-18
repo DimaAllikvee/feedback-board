@@ -24,7 +24,8 @@ import { AuthModal } from './components/AuthModal';
 import { AuthGate } from './components/AuthGate';
 import { ShowcaseModal } from './components/ShowcaseModal';
 import { ToastStack, ToastMessage } from './components/ui/Toast';
-import { RuneCrown } from './components/icons/RuneIcons';
+import { Footer } from './components/Footer';
+import { LegalModal, LegalModalTab } from './components/LegalModal';
 
 export const App: React.FC = () => {
   // Start unauthenticated (User is NOT logged in by default)
@@ -54,6 +55,7 @@ export const App: React.FC = () => {
   const [isStripeModalOpen, setIsStripeModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isShowcaseOpen, setIsShowcaseOpen] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState<LegalModalTab | null>(null);
 
   // Search input ref for keyboard shortcut (⌘K / /)
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -768,32 +770,18 @@ export const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Clean Minimalist Footer */}
-      <footer className="border-t border-zinc-800/80 bg-zinc-950 py-6 text-xs text-zinc-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-wrap justify-center">
-            <span className="font-medium text-zinc-300">Hometown Board</span>
-            <span>•</span>
-            <span>Community Feedback & Roadmap</span>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => setIsShowcaseOpen(true)}
-              className="text-zinc-400 hover:text-zinc-200 underline underline-offset-4 cursor-pointer transition-colors"
-            >
-              Component Showcase
-            </button>
-          </div>
-          <div className="flex items-center gap-3 text-zinc-400">
-            <span className="flex items-center gap-1.5">
-              <RuneCrown size={13} className="text-zinc-400" />
-              <span>Stripe Test Mode Active</span>
-            </span>
-            <span>•</span>
-            <span>PocketBase Backend</span>
-          </div>
-        </div>
-      </footer>
+      {/* Production SaaS Footer */}
+      <Footer
+        onNavigateTab={(tab) => {
+          setActiveTab(tab);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenShowcase={() => setIsShowcaseOpen(true)}
+        onOpenStripe={() => setIsStripeModalOpen(true)}
+        onOpenNewPost={() => setIsNewPostOpen(true)}
+        onOpenLegal={(tab) => setLegalModalTab(tab)}
+        onTriggerToast={(msg, type) => addToast(msg, undefined, type)}
+      />
 
       {/* Toast Notification Stack */}
       <ToastStack toasts={toasts} onDismiss={handleDismissToast} />
@@ -805,6 +793,18 @@ export const App: React.FC = () => {
             isOpen={isShowcaseOpen}
             onClose={() => setIsShowcaseOpen(false)}
             onTriggerToast={addToast}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Legal & Compliance Modal */}
+      <AnimatePresence>
+        {legalModalTab && (
+          <LegalModal
+            isOpen={Boolean(legalModalTab)}
+            activeTab={legalModalTab}
+            onClose={() => setLegalModalTab(null)}
+            onTabChange={(tab) => setLegalModalTab(tab)}
           />
         )}
       </AnimatePresence>
