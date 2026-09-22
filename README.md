@@ -206,8 +206,8 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## 7. Team Members & Division of Work
 
-- **Dmitri Allikvee** — Full-stack Architecture, React 19 Frontend, Stripe Hosted Checkout, PocketBase API & Security Rules, Coolify Deployment.
-- **Juri Allikvee** — UI/UX Prototyping, Component Library Integration, Data Modeling & Testing.
+- **Dmitri Allikvee** 
+- **Juri Allikvee**
 
 ---
 
