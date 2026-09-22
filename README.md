@@ -1,6 +1,6 @@
 # Hometown (FeedbackPulse) — Customer Feedback & Interactive Roadmap SaaS
 
-> **Project Week SaaS Application (Projektinädala juhend — Hinne "A")**  
+> **Project Week SaaS Application**  
 > Built with **React 19**, **TypeScript**, **Vite**, **Tailwind CSS**, **Rune Icons**, **PocketBase (Go + SQLite + Auth + REST API)**, **Stripe Test Mode (Official Hosted Checkout)**, and **Coolify PaaS**.
 
 ---
