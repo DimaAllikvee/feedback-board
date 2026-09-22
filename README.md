@@ -211,7 +211,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## 8. Professional Defense Questions & Answers (Grade "A" Criteria)
+## 8. Professional Defense Questions & Answers
 
 ### Q1: How is the connection between Coolify, the client, and PocketBase secured, and why would unencrypted HTTP be dangerous?
 > **Answer:**  
